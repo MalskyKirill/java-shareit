@@ -12,7 +12,6 @@ public class UserMapper {
         return userDto;
     }
 
-
     public User mapToUser(User user) {
         User newUser = new User();
         newUser.setId(user.getId());
