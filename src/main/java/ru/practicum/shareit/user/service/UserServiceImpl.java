@@ -30,6 +30,6 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void deleteUser(Long userId) {
-
+        userStorage.delete(userId);
     }
 }

@@ -7,5 +7,5 @@ public interface UserStorage {
     User get(Long userId);
     User create(User user);
     User update(User user);
-    UserDto delete(Long userId);
+    void delete(Long userId);
 }

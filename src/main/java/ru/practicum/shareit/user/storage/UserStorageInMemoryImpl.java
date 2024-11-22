@@ -54,12 +54,18 @@ public class UserStorageInMemoryImpl implements UserStorage{
     }
 
     @Override
-    public UserDto delete(Long userId) {
-        return null;
+    public void delete(Long userId) {
+        userCheck(userId);
+        userEmailList.remove(users.get(userId).getEmail());
+        users.remove(userId);
     }
 
     private long getId() {
-        long maxUserId = users.values().stream().mapToLong(User::getId).max().orElse(0);
+        long maxUserId = users
+            .values()
+            .stream()
+            .mapToLong(User::getId)
+            .max().orElse(0);
         return maxUserId + 1;
     }
 
