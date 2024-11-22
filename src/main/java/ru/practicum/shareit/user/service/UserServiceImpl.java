@@ -23,8 +23,9 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDto updateUser(Long userId) {
-        return null;
+    public UserDto updateUser(Long userId, User user) {
+        user.setId(userId);
+        return UserMapper.mapToUserDto(userStorage.update(user));
     }
 
     @Override

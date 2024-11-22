@@ -6,6 +6,6 @@ import ru.practicum.shareit.user.model.User;
 public interface UserStorage {
     User get(Long userId);
     User create(User user);
-    UserDto update(Long userId);
+    User update(User user);
     UserDto delete(Long userId);
 }
