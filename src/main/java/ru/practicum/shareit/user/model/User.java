@@ -13,7 +13,6 @@ import lombok.Data;
 public class User {
     private Long id;
     @NotBlank(message = "user name can't be null, empty or blank")
-    @Pattern(regexp = "\\S+", message = "user name mast contain no whitespace")
     private String name;
     @NotBlank(message = "email can't be null, empty or blank")
     @Email(message = "email should be valid")
