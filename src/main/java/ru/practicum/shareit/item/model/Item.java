@@ -21,7 +21,6 @@ public class Item {
     private String description;
     @NotNull(message = "available can't be null")
     private Boolean available;
-    @NotNull(message = "owner can't' null")
     private Long ownerId;
     private ItemRequest request;
 }

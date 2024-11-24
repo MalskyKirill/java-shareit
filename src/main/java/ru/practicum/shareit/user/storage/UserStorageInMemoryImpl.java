@@ -2,8 +2,6 @@ package ru.practicum.shareit.user.storage;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.AlreadyExistsException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.HashMap;
@@ -60,6 +58,13 @@ public class UserStorageInMemoryImpl implements UserStorage{
         users.remove(userId);
     }
 
+    @Override
+    public void userCheck(Long userId) {
+        if (!users.containsKey(userId)) {
+            throw new NotFoundException("User with id " + userId + " not found");
+        }
+    }
+
     private long getId() {
         long maxUserId = users
             .values()
@@ -67,12 +72,6 @@ public class UserStorageInMemoryImpl implements UserStorage{
             .mapToLong(User::getId)
             .max().orElse(0);
         return maxUserId + 1;
-    }
-
-    private void userCheck(Long userId) {
-        if (!users.containsKey(userId)) {
-            throw new NotFoundException("User with id " + userId + " not found");
-        }
     }
 
     private void emailCheck(User user) {
