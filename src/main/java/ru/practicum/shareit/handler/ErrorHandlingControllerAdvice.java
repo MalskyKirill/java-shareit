@@ -2,6 +2,7 @@ package ru.practicum.shareit.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,6 +22,13 @@ public class ErrorHandlingControllerAdvice {
         final List<Violation> violations = e.getBindingResult().getFieldErrors()
             .stream().map(err -> new Violation(err.getField(), err.getDefaultMessage())).toList();
         return new ValidationErrorResponse(violations);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    @ResponseBody
+    public ErrorResponse onMissingRequestHeaderException(MissingRequestHeaderException e) {
+        return new ErrorResponse("MissingRequestHeaderException", e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
