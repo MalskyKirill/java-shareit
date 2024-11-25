@@ -8,7 +8,9 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.storage.UserStorage;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,10 +37,19 @@ public class ItemServiceImpl implements ItemService{
         userStorage.userCheck(userId);
 
         List<Item> items = itemStorage.getAllItemsByUser(userId); // получаем айтемы юзера
-        if (items == null) {
-            return null;
-        }
+
         List<ItemDto> itemsDto = items.stream().map(ItemMapper::mapToItemDto).toList(); // бежим по коллекции item и мапим каждый в itemDto
+        return itemsDto;
+    }
+
+    @Override
+    public List<ItemDto> getSearchItemList(String text) {
+        if (Objects.equals(text, "")) { // если передана пустая строка
+            return new ArrayList<>(); // возвращаем пустой лист
+        }
+
+        List<Item> items = itemStorage.getSearchItemList(text);
+        List<ItemDto> itemsDto = items.stream().map(ItemMapper::mapToItemDto).toList();
         return itemsDto;
     }
 }

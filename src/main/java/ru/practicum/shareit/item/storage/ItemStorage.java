@@ -10,4 +10,6 @@ public interface ItemStorage {
     Item get(Long itemId);
 
     List<Item> getAllItemsByUser(Long userId);
+
+    List<Item> getSearchItemList(String text);
 }

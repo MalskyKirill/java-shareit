@@ -33,6 +33,9 @@ public class ItemController {
         return itemService.getAllItemsByUser(userId);
     }
 
-    
+    @GetMapping("/search")
+    public List<ItemDto> getItemsBySearch(@RequestParam String text) {
+        return itemService.getSearchItemList(text);
+    }
 
 }

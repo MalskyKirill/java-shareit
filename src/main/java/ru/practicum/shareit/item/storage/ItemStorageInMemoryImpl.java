@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 public class ItemStorageInMemoryImpl implements ItemStorage{
@@ -44,6 +45,16 @@ public class ItemStorageInMemoryImpl implements ItemStorage{
     @Override
     public List<Item> getAllItemsByUser(Long userId) {
         return itemsByUser.get(userId);
+    }
+
+    @Override
+    public List<Item> getSearchItemList(String text) {
+
+        return items.values() // берем значения
+            .stream() // преобразуем в стрим
+            .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())) // проверяем наличие подстроки в строке
+            .filter(Item::getAvailable) // проверяем на доступность
+            .collect(Collectors.toList()); // собираем в коллекцию
     }
 
     private long getId() {
