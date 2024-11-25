@@ -5,4 +5,6 @@ import ru.practicum.shareit.item.model.Item;
 
 public interface ItemService {
      ItemDto createItem(Item item, Long ownerId);
+
+    ItemDto getItem(Long userId, Long itemId);
 }

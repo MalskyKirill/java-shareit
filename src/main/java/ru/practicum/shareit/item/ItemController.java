@@ -21,4 +21,13 @@ public class ItemController {
         return itemService.createItem(item, ownerId);
     }
 
+    @GetMapping("/{itemId}")
+    public ItemDto getUserItemById(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long itemId) {
+        System.out.println(userId);
+        System.out.println(itemId);
+        return itemService.getItem(userId, itemId);
+    }
+
+    
+
 }

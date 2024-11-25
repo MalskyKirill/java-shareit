@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.storage;
 
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.AlreadyExistsException;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -23,6 +24,12 @@ public class ItemStorageInMemoryImpl implements ItemStorage{
         return item;
     }
 
+    @Override
+    public Item get(Long itemId) {
+        checkItem(itemId);
+        return items.get(itemId);
+    }
+
     private long getId() {
         long maxUserId = items
             .values()
@@ -30,5 +37,11 @@ public class ItemStorageInMemoryImpl implements ItemStorage{
             .mapToLong(Item::getId)
             .max().orElse(0);
         return maxUserId + 1;
+    }
+
+    private void checkItem(Long itemId) {
+        if (!items.containsKey(itemId)) {
+            throw new NotFoundException("Item with id " + itemId + " not found");
+        }
     }
 }

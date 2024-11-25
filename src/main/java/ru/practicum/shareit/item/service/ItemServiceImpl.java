@@ -20,4 +20,10 @@ public class ItemServiceImpl implements ItemService{
         item.setOwnerId(ownerId);
         return ItemMapper.mapToItemDto(itemStorage.create(item));
     }
+
+    @Override
+    public ItemDto getItem(Long userId, Long itemId) {
+        userStorage.userCheck(userId);
+        return ItemMapper.mapToItemDto(itemStorage.get(itemId));
+    }
 }
