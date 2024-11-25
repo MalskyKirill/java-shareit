@@ -4,14 +4,16 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.AlreadyExistsException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
 public class ItemStorageInMemoryImpl implements ItemStorage{
-    private Map<Long, Item> items = new HashMap<>();
+    private final Map<Long, Item> items = new HashMap<>();
+    private final Map<Long, List<Item>> itemsByUser = new HashMap<>(); // создаем мапу для хранения item юзера
 
     @Override
     public Item create(Item item) {
@@ -21,6 +23,15 @@ public class ItemStorageInMemoryImpl implements ItemStorage{
 
         item.setId(getId());
         items.put(item.getId(), item);
+
+        if (!itemsByUser.containsKey(item.getOwnerId())) { // ежели в мапе itemsByUser нет ключа userId
+            itemsByUser.put(item.getOwnerId(), new ArrayList<>()); // добавляем в мапу новые ключ-лист
+        }
+
+        List<Item> userItems = itemsByUser.get(item.getOwnerId()); // берем список item юзера
+        userItems.add(item); // добавляем новую вещь
+        itemsByUser.put(item.getOwnerId(), userItems); // обнавляем мапу
+
         return item;
     }
 
@@ -28,6 +39,11 @@ public class ItemStorageInMemoryImpl implements ItemStorage{
     public Item get(Long itemId) {
         checkItem(itemId);
         return items.get(itemId);
+    }
+
+    @Override
+    public List<Item> getAllItemsByUser(Long userId) {
+        return itemsByUser.get(userId);
     }
 
     private long getId() {

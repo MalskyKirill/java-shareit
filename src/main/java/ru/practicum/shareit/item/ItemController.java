@@ -7,6 +7,8 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
+import java.util.List;
+
 /**
  * TODO Sprint add-controllers.
  */
@@ -23,9 +25,12 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ItemDto getUserItemById(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long itemId) {
-        System.out.println(userId);
-        System.out.println(itemId);
         return itemService.getItem(userId, itemId);
+    }
+
+    @GetMapping
+    public List<ItemDto> getAllItemsByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
+        return itemService.getAllItemsByUser(userId);
     }
 
     
