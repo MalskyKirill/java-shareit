@@ -16,13 +16,13 @@ public class UserStorageInMemoryImpl implements UserStorage{
 
     @Override
     public User get(Long userId) {
-        userCheck(userId);
+        checkUser(userId);
         return users.get(userId);
     }
 
     @Override
     public User create(User user) {
-        emailCheck(user);
+        checkEmail(user);
         userEmailList.add(user.getEmail());
 
         if (user.getId() != null && users.containsKey(user.getId())) {
@@ -36,8 +36,8 @@ public class UserStorageInMemoryImpl implements UserStorage{
 
     @Override
     public User update(User user) {
-        userCheck(user.getId());
-        emailCheck(user);
+        checkUser(user.getId());
+        checkEmail(user);
 
         if(user.getName() == null) {
             user.setName(users.get(user.getId()).getName());
@@ -53,13 +53,13 @@ public class UserStorageInMemoryImpl implements UserStorage{
 
     @Override
     public void delete(Long userId) {
-        userCheck(userId);
+        checkUser(userId);
         userEmailList.remove(users.get(userId).getEmail());
         users.remove(userId);
     }
 
     @Override
-    public void userCheck(Long userId) {
+    public void checkUser(Long userId) {
         if (!users.containsKey(userId)) {
             throw new NotFoundException("User with id " + userId + " not found");
         }
@@ -74,7 +74,7 @@ public class UserStorageInMemoryImpl implements UserStorage{
         return maxUserId + 1;
     }
 
-    private void emailCheck(User user) {
+    private void checkEmail(User user) {
         if (userEmailList.contains(user.getEmail())) {
             throw new AlreadyExistsException("User with e-mail " + user.getEmail() + " already created");
         }

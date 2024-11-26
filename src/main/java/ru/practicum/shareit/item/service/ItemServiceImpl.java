@@ -21,20 +21,20 @@ public class ItemServiceImpl implements ItemService{
 
     @Override
     public ItemDto createItem(Item item, Long ownerId) {
-        userStorage.userCheck(ownerId);
+        userStorage.checkUser(ownerId);
         item.setOwnerId(ownerId);
         return ItemMapper.mapToItemDto(itemStorage.create(item));
     }
 
     @Override
     public ItemDto getItem(Long userId, Long itemId) {
-        userStorage.userCheck(userId);
+        userStorage.checkUser(userId);
         return ItemMapper.mapToItemDto(itemStorage.get(itemId));
     }
 
     @Override
     public List<ItemDto> getAllItemsByUser(Long userId) {
-        userStorage.userCheck(userId);
+        userStorage.checkUser(userId);
 
         List<Item> items = itemStorage.getAllItemsByUser(userId); // получаем айтемы юзера
 
@@ -48,8 +48,16 @@ public class ItemServiceImpl implements ItemService{
             return new ArrayList<>(); // возвращаем пустой лист
         }
 
-        List<Item> items = itemStorage.getSearchItemList(text);
+        List<Item> items = itemStorage.getSearchItemList(text.toLowerCase());
         List<ItemDto> itemsDto = items.stream().map(ItemMapper::mapToItemDto).toList();
         return itemsDto;
+    }
+
+    @Override
+    public ItemDto updateItem(Long userId, Long itemId, Item item) {
+        userStorage.checkUser(userId);
+        item.setOwnerId(userId);
+        item.setId(itemId);
+        return ItemMapper.mapToItemDto(itemStorage.update(item));
     }
 }

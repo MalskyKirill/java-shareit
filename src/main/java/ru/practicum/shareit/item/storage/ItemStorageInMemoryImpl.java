@@ -49,12 +49,32 @@ public class ItemStorageInMemoryImpl implements ItemStorage{
 
     @Override
     public List<Item> getSearchItemList(String text) {
-
         return items.values() // берем значения
             .stream() // преобразуем в стрим
-            .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())) // проверяем наличие подстроки в строке
+            .filter(item -> item.getName().toLowerCase().contains(text)) // проверяем наличие подстроки в строке
             .filter(Item::getAvailable) // проверяем на доступность
             .collect(Collectors.toList()); // собираем в коллекцию
+    }
+
+    @Override
+    public Item update(Item item) {
+        checkItem(item.getId());
+
+        if (item.getName() == null) {
+            item.setName(items.get(item.getId()).getName());
+        }
+
+        if (item.getDescription() == null) {
+            item.setDescription(items.get(item.getId()).getDescription());
+        }
+
+        if (item.getAvailable() == null) {
+            item.setAvailable(items.get(item.getId()).getAvailable());
+        }
+
+        items.replace(item.getId(), item);
+
+        return items.get(item.getId());
     }
 
     private long getId() {
