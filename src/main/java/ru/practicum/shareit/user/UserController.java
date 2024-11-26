@@ -14,6 +14,7 @@ import ru.practicum.shareit.user.service.UserService;
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 public class UserController {
+
     private final UserService userService;
 
     @GetMapping("/{userId}")
@@ -29,7 +30,7 @@ public class UserController {
     @PatchMapping("/{userId}")
     public UserDto updateUser(@PathVariable Long userId, @RequestBody User user) {
         return userService.updateUser(userId, user);
-    };
+    }
 
     @DeleteMapping("/{userId}")
     public void deleteUserById(@PathVariable Long userId) {

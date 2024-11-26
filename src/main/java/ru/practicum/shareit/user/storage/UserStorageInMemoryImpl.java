@@ -1,4 +1,5 @@
 package ru.practicum.shareit.user.storage;
+
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.AlreadyExistsException;
 import ru.practicum.shareit.exceptions.NotFoundException;
@@ -10,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Repository
-public class UserStorageInMemoryImpl implements UserStorage{
+public class UserStorageInMemoryImpl implements UserStorage {
     private Map<Long, User> users = new HashMap<>();
     private Set<String> userEmailList = new HashSet<>();
 
@@ -39,11 +40,11 @@ public class UserStorageInMemoryImpl implements UserStorage{
         checkUser(user.getId());
         checkEmail(user);
 
-        if(user.getName() == null) {
+        if (user.getName() == null) {
             user.setName(users.get(user.getId()).getName());
         }
 
-        if(user.getEmail() == null) {
+        if (user.getEmail() == null) {
             user.setEmail(users.get(user.getId()).getEmail());
         }
 

@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Repository
-public class ItemStorageInMemoryImpl implements ItemStorage{
+public class ItemStorageInMemoryImpl implements ItemStorage {
     private final Map<Long, Item> items = new HashMap<>();
     private final Map<Long, List<Item>> itemsByUser = new HashMap<>(); // создаем мапу для хранения item юзера
 
@@ -20,7 +20,8 @@ public class ItemStorageInMemoryImpl implements ItemStorage{
     public Item create(Item item) {
         if (item.getId() != null && items.containsKey(item.getId())) {
             throw new AlreadyExistsException("User with id " + item.getId() + " already created");
-        };
+        }
+        ;
 
         item.setId(getId());
         items.put(item.getId(), item);
