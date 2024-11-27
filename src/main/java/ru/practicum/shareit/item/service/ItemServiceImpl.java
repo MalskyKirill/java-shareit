@@ -19,9 +19,9 @@ public class ItemServiceImpl implements ItemService {
     private final UserStorage userStorage;
 
     @Override
-    public ItemDto createItem(Item item, Long ownerId) {
+    public ItemDto createItem(ItemDto itemDto, Long ownerId) {
         userStorage.checkUser(ownerId);
-        item.setOwnerId(ownerId);
+        Item item = ItemMapper.mapToItem(itemDto, ownerId);
         return ItemMapper.mapToItemDto(itemStorage.create(item));
     }
 
@@ -53,8 +53,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto updateItem(Long userId, Long itemId, Item item) {
+    public ItemDto updateItem(Long userId, Long itemId, ItemDto itemDto) {
         userStorage.checkUser(userId);
+        Item item = ItemMapper.mapToItem(itemDto, userId);
         item.setOwnerId(userId);
         item.setId(itemId);
         return ItemMapper.mapToItemDto(itemStorage.update(item));
