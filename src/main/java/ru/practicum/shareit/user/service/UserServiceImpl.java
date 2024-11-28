@@ -18,13 +18,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto createUser(User user) {
+    public UserDto createUser(UserDto userDto) {
+        User user = UserMapper.mapToUser(userDto);
         return UserMapper.mapToUserDto(userStorage.create(user));
     }
 
     @Override
-    public UserDto updateUser(Long userId, User user) {
-        user.setId(userId);
+    public UserDto updateUser(Long userId, UserDto userDto) {
+        userDto.setId(userId);
+        User user = UserMapper.mapToUser(userDto);
         return UserMapper.mapToUserDto(userStorage.update(user));
     }
 

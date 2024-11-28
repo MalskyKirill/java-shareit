@@ -21,8 +21,8 @@ public class ItemStorageInMemoryImpl implements ItemStorage {
     @Override
     public Item create(Item item) {
         if (item.getId() != null && items.containsKey(item.getId())) {
-            log.error("User with id " + item.getId() + " already created");
-            throw new AlreadyExistsException("User with id " + item.getId() + " already created");
+            log.error("Item with id " + item.getId() + " already created");
+            throw new AlreadyExistsException("Item with id " + item.getId() + " already created");
         }
 
         item.setId(getId());
@@ -42,8 +42,11 @@ public class ItemStorageInMemoryImpl implements ItemStorage {
 
     @Override
     public Item get(Long itemId) {
-        checkItem(itemId);
         Item item = items.get(itemId);
+        if (item == null) {
+            log.error("Item with id " + itemId + " not found");
+            throw new NotFoundException("Item with id " + itemId + " not found");
+        }
         log.info("item с ID = {}, достали из HashMap", item.getId());
         return item;
     }
