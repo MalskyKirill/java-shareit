@@ -42,9 +42,16 @@ public class ItemServiceImpl implements ItemService {
         userStorage.checkUser(userId);
 
         List<Item> items = itemStorage.getAllItemsByUser(userId); // получаем айтемы юзера
+        if (items == null) {
+            log.info("пользователя с ID = {} список вещей пуст", userId);
+            return null;
+        }
 
-        List<ItemDto> itemsDto = items.stream().map(ItemMapper::mapToItemDto).toList(); // бежим по коллекции item и мапим каждый в itemDto
-        log.info("получен список item у пользователя с ID = {}",userId);
+        List<ItemDto> itemsDto = items.stream()
+            .map(ItemMapper::mapToItemDto)
+            .toList(); // бежим по коллекции item и мапим каждый в itemDto
+
+        log.info("получен список item у пользователя с ID = {}", userId);
         return itemsDto;
     }
 
@@ -55,7 +62,10 @@ public class ItemServiceImpl implements ItemService {
         }
 
         List<Item> items = itemStorage.getSearchItemList(text.toLowerCase());
-        List<ItemDto> itemsDto = items.stream().map(ItemMapper::mapToItemDto).toList();
+        List<ItemDto> itemsDto = items.stream()
+            .map(ItemMapper::mapToItemDto)
+            .toList();
+
         log.info("получен список item по запросу = {}", text);
         return itemsDto;
     }
