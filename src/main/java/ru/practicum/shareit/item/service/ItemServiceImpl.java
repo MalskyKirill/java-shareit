@@ -76,7 +76,8 @@ public class ItemServiceImpl implements ItemService {
         Item item = ItemMapper.mapToItem(itemDto, userId);
         item.setOwnerId(userId);
         item.setId(itemId);
+        ItemDto updateItemDto = ItemMapper.mapToItemDto(itemStorage.update(item));
         log.info("обновлен item с ID = {}", itemId);
-        return ItemMapper.mapToItemDto(itemStorage.update(item));
+        return updateItemDto;
     }
 }

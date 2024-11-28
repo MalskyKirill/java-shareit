@@ -88,7 +88,7 @@ public class ItemStorageInMemoryImpl implements ItemStorage {
         items.replace(item.getId(), item);
 
         Item updateItem = items.get(item.getId());
-
+        log.info("item с ID = {}, обновили в HashMap", item.getId());
         return updateItem;
     }
 
