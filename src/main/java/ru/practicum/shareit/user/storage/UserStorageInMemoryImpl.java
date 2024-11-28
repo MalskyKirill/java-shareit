@@ -46,7 +46,7 @@ public class UserStorageInMemoryImpl implements UserStorage {
     @Override
     public User update(User user) {
         checkUser(user.getId());
-        
+
         if (!user.getEmail().equals(users.get(user.getId()).getEmail())) {
             checkEmail(user);
         }
