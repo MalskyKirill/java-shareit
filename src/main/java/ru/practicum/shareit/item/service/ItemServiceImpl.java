@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
@@ -22,13 +24,17 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto createItem(ItemDto itemDto, Long ownerId) {
         userStorage.checkUser(ownerId);
         Item item = ItemMapper.mapToItem(itemDto, ownerId);
-        return ItemMapper.mapToItemDto(itemStorage.create(item));
+        ItemDto newItemDto = ItemMapper.mapToItemDto(itemStorage.create(item));
+        log.info("создан новый item с ID = {}", newItemDto.getId());
+        return newItemDto;
     }
 
     @Override
     public ItemDto getItem(Long userId, Long itemId) {
         userStorage.checkUser(userId);
-        return ItemMapper.mapToItemDto(itemStorage.get(itemId));
+        ItemDto itemDto = ItemMapper.mapToItemDto(itemStorage.get(itemId));
+        log.info("получен item с ID = {}", itemDto.getId());
+        return itemDto;
     }
 
     @Override
@@ -38,6 +44,7 @@ public class ItemServiceImpl implements ItemService {
         List<Item> items = itemStorage.getAllItemsByUser(userId); // получаем айтемы юзера
 
         List<ItemDto> itemsDto = items.stream().map(ItemMapper::mapToItemDto).toList(); // бежим по коллекции item и мапим каждый в itemDto
+        log.info("получен список item у пользователя с ID = {}",userId);
         return itemsDto;
     }
 
@@ -49,6 +56,7 @@ public class ItemServiceImpl implements ItemService {
 
         List<Item> items = itemStorage.getSearchItemList(text.toLowerCase());
         List<ItemDto> itemsDto = items.stream().map(ItemMapper::mapToItemDto).toList();
+        log.info("получен список item по запросу = {}", text);
         return itemsDto;
     }
 
@@ -58,6 +66,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = ItemMapper.mapToItem(itemDto, userId);
         item.setOwnerId(userId);
         item.setId(itemId);
+        log.info("обновлен item с ID = {}", itemId);
         return ItemMapper.mapToItemDto(itemStorage.update(item));
     }
 }

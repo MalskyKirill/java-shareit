@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.storage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.AlreadyExistsException;
 import ru.practicum.shareit.exceptions.NotFoundException;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Repository
 public class ItemStorageInMemoryImpl implements ItemStorage {
     private final Map<Long, Item> items = new HashMap<>();
@@ -19,9 +21,9 @@ public class ItemStorageInMemoryImpl implements ItemStorage {
     @Override
     public Item create(Item item) {
         if (item.getId() != null && items.containsKey(item.getId())) {
+            log.error("User with id " + item.getId() + " already created");
             throw new AlreadyExistsException("User with id " + item.getId() + " already created");
         }
-        ;
 
         item.setId(getId());
         items.put(item.getId(), item);
@@ -34,27 +36,34 @@ public class ItemStorageInMemoryImpl implements ItemStorage {
         userItems.add(item); // добавляем новую вещь
         itemsByUser.put(item.getOwnerId(), userItems); // обнавляем мапу
 
+        log.info("item с ID = {}, добавлен в HashMap", item.getId());
         return item;
     }
 
     @Override
     public Item get(Long itemId) {
         checkItem(itemId);
-        return items.get(itemId);
+        Item item = items.get(itemId);
+        log.info("item с ID = {}, достали из HashMap", item.getId());
+        return item;
     }
 
     @Override
     public List<Item> getAllItemsByUser(Long userId) {
-        return itemsByUser.get(userId);
+        List<Item> itemList = itemsByUser.get(userId);
+        log.info("список item у user с ID = {}, достали из HashMap", userId);
+        return itemList;
     }
 
     @Override
     public List<Item> getSearchItemList(String text) {
-        return items.values() // берем значения
+        List<Item> itemList = items.values() // берем значения
             .stream() // преобразуем в стрим
-            .filter(item -> item.getName().toLowerCase().contains(text)) // проверяем наличие подстроки в строке
+            .filter(item -> item.getName().toLowerCase().contains(text) || item.getDescription().toLowerCase().contains(text)) // проверяем наличие подстроки в строке
             .filter(Item::getAvailable) // проверяем на доступность
             .collect(Collectors.toList()); // собираем в коллекцию
+        log.info("список item по запросу {}, достали из HashMap", text);
+        return itemList;
     }
 
     @Override
@@ -75,7 +84,9 @@ public class ItemStorageInMemoryImpl implements ItemStorage {
 
         items.replace(item.getId(), item);
 
-        return items.get(item.getId());
+        Item updateItem = items.get(item.getId());
+
+        return updateItem;
     }
 
     private long getId() {
@@ -89,6 +100,7 @@ public class ItemStorageInMemoryImpl implements ItemStorage {
 
     private void checkItem(Long itemId) {
         if (!items.containsKey(itemId)) {
+            log.error("Item with id " + itemId + " not found");
             throw new NotFoundException("Item with id " + itemId + " not found");
         }
     }
