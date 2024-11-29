@@ -47,7 +47,7 @@ public class UserStorageInMemoryImpl implements UserStorage {
     public User update(User user) {
         checkUser(user.getId());
 
-        if (!user.getEmail().equals(users.get(user.getId()).getEmail())) {
+        if (user.getEmail() != null && !user.getEmail().equals(users.get(user.getId()).getEmail())) {
             checkEmail(user);
         }
 
