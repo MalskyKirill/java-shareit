@@ -22,11 +22,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto createItem(ItemDto itemDto, Long ownerId) {
-        userStorage.checkUser(ownerId);
-        Item item = ItemMapper.mapToItem(itemDto, ownerId);
-        ItemDto newItemDto = ItemMapper.mapToItemDto(itemStorage.create(item));
-        log.info("создан новый item с ID = {}", newItemDto.getId());
-        return newItemDto;
+//        userStorage.checkUser(ownerId);
+//        Item item = ItemMapper.mapToItem(itemDto, ownerId);
+//        ItemDto newItemDto = ItemMapper.mapToItemDto(itemStorage.create(item));
+//        log.info("создан новый item с ID = {}", newItemDto.getId());
+//        return newItemDto;
+        return null;
     }
 
     @Override
@@ -72,12 +73,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto updateItem(Long userId, Long itemId, ItemDto itemDto) {
-        userStorage.checkUser(userId);
-        Item item = ItemMapper.mapToItem(itemDto, userId);
-        item.setOwnerId(userId);
-        item.setId(itemId);
-        ItemDto updateItemDto = ItemMapper.mapToItemDto(itemStorage.update(item));
-        log.info("обновлен item с ID = {}", itemId);
-        return updateItemDto;
+//        userStorage.checkUser(userId);
+//        Item item = ItemMapper.mapToItem(itemDto, userId);
+//        item.setOwnerId(userId);
+//        item.setId(itemId);
+//        ItemDto updateItemDto = ItemMapper.mapToItemDto(itemStorage.update(item));
+//        log.info("обновлен item с ID = {}", itemId);
+//        return updateItemDto;
+        return null;
     }
 }

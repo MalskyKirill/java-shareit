@@ -20,24 +20,25 @@ public class ItemStorageInMemoryImpl implements ItemStorage {
 
     @Override
     public Item create(Item item) {
-        if (item.getId() != null && items.containsKey(item.getId())) {
-            log.error("Item with id " + item.getId() + " already created");
-            throw new AlreadyExistsException("Item with id " + item.getId() + " already created");
-        }
-
-        item.setId(getId());
-        items.put(item.getId(), item);
-
-        if (!itemsByUser.containsKey(item.getOwnerId())) { // ежели в мапе itemsByUser нет ключа userId
-            itemsByUser.put(item.getOwnerId(), new ArrayList<>()); // добавляем в мапу новые ключ-лист
-        }
-
-        List<Item> userItems = itemsByUser.get(item.getOwnerId()); // берем список item юзера
-        userItems.add(item); // добавляем новую вещь
-        itemsByUser.put(item.getOwnerId(), userItems); // обнавляем мапу
-
-        log.info("item с ID = {}, добавлен в HashMap", item.getId());
-        return item;
+//        if (item.getId() != null && items.containsKey(item.getId())) {
+//            log.error("Item with id " + item.getId() + " already created");
+//            throw new AlreadyExistsException("Item with id " + item.getId() + " already created");
+//        }
+//
+//        item.setId(getId());
+//        items.put(item.getId(), item);
+//
+//        if (!itemsByUser.containsKey(item.getOwnerId())) { // ежели в мапе itemsByUser нет ключа userId
+//            itemsByUser.put(item.getOwnerId(), new ArrayList<>()); // добавляем в мапу новые ключ-лист
+//        }
+//
+//        List<Item> userItems = itemsByUser.get(item.getOwnerId()); // берем список item юзера
+//        userItems.add(item); // добавляем новую вещь
+//        itemsByUser.put(item.getOwnerId(), userItems); // обнавляем мапу
+//
+//        log.info("item с ID = {}, добавлен в HashMap", item.getId());
+//        return item;
+        return null;
     }
 
     @Override
