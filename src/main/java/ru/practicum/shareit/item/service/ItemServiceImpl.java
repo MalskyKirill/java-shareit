@@ -7,7 +7,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.storage.UserStorage;
+//import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
-    private final UserStorage userStorage;
+//    private final UserStorage userStorage;
 
     @Override
     public ItemDto createItem(ItemDto itemDto, Long ownerId) {
@@ -32,7 +32,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto getItem(Long userId, Long itemId) {
-        userStorage.checkUser(userId);
+//        userStorage.checkUser(userId);
         ItemDto itemDto = ItemMapper.mapToItemDto(itemStorage.get(itemId));
         log.info("получен item с ID = {}", itemDto.getId());
         return itemDto;
@@ -40,7 +40,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getAllItemsByUser(Long userId) {
-        userStorage.checkUser(userId);
+//        userStorage.checkUser(userId);
 
         List<Item> items = itemStorage.getAllItemsByUser(userId); // получаем айтемы юзера
         if (items == null) {
