@@ -3,11 +3,17 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorage;
-//import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.user.mapper.UserMapper;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.storage.UserRepository;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,32 +23,34 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final ItemStorage itemStorage;
-//    private final UserStorage userStorage;
+    private final ItemRepository itemRepository;
+    private final UserService userService;
 
+    @Transactional
     @Override
     public ItemDto createItem(ItemDto itemDto, Long ownerId) {
-//        userStorage.checkUser(ownerId);
-//        Item item = ItemMapper.mapToItem(itemDto, ownerId);
-//        ItemDto newItemDto = ItemMapper.mapToItemDto(itemStorage.create(item));
-//        log.info("создан новый item с ID = {}", newItemDto.getId());
-//        return newItemDto;
-        return null;
+        User owner = UserMapper.mapToUser(userService.getUser(ownerId));
+        Item item = ItemMapper.mapToItem(itemDto, owner);
+        ItemDto newItemDto = ItemMapper.mapToItemDto(itemRepository.save(item));
+        log.info("создан новый item с ID = {}", newItemDto.getId());
+        return newItemDto;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ItemDto getItem(Long userId, Long itemId) {
-//        userStorage.checkUser(userId);
-        ItemDto itemDto = ItemMapper.mapToItemDto(itemStorage.get(itemId));
+        ItemDto itemDto = ItemMapper.mapToItemDto(itemRepository.findById(itemId).orElseThrow(() -> {
+            log.error("Item with id " + itemId + " not found");
+            throw new NotFoundException("Item with id " + itemId + " not found");
+        }));
         log.info("получен item с ID = {}", itemDto.getId());
         return itemDto;
     }
 
     @Override
     public List<ItemDto> getAllItemsByUser(Long userId) {
-//        userStorage.checkUser(userId);
-
-        List<Item> items = itemStorage.getAllItemsByUser(userId); // получаем айтемы юзера
+        userService.getUser(userId);
+        List<Item> items = itemRepository.findItemsByOwnerId(userId);
         if (items == null) {
             log.info("пользователя с ID = {} список вещей пуст", userId);
             return null;
@@ -62,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>(); // возвращаем пустой лист
         }
 
-        List<Item> items = itemStorage.getSearchItemList(text.toLowerCase());
+        List<Item> items = itemRepository.getItemsBySearchQuery(text.toLowerCase());
         List<ItemDto> itemsDto = items.stream()
             .map(ItemMapper::mapToItemDto)
             .toList();
@@ -80,6 +88,27 @@ public class ItemServiceImpl implements ItemService {
 //        ItemDto updateItemDto = ItemMapper.mapToItemDto(itemStorage.update(item));
 //        log.info("обновлен item с ID = {}", itemId);
 //        return updateItemDto;
-        return null;
+        userService.getUser(userId);
+
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> {
+            log.error("Item with id " + itemId + " not found");
+            throw new NotFoundException("Item with id " + itemId + " not found");
+        });
+
+        if (itemDto.getName() != null) {
+            item.setName(itemDto.getName());
+        }
+
+        if (itemDto.getDescription() != null) {
+            item.setDescription(itemDto.getDescription());
+        }
+
+        if (itemDto.getAvailable() != null) {
+            item.setAvailable(itemDto.getAvailable());
+        }
+
+        ItemDto updateItemDto = ItemMapper.mapToItemDto(itemRepository.save(item));
+        log.info("обновлен item с ID = {}", itemId);
+        return updateItemDto;
     }
 }
