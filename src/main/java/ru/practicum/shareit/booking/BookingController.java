@@ -21,8 +21,14 @@ public class BookingController {
 
     @PostMapping
     public BookingDto createNewBooking(@Valid @RequestBody BookingDtoRequest bookingDtoRequest, @RequestHeader("X-Sharer-User-Id") Long userId) {
-        log.info("POST-запрос к эндпоинту: '/users' на добавление user");
+        log.info("POST-запрос к эндпоинту: '/bookings' на добавление booking");
         return bookingService.createBooking(bookingDtoRequest, userId);
+    }
+
+    @PatchMapping("/{bookingId}")
+    public BookingDto updateBooking(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long bookingId, @RequestParam Boolean approved) {
+        log.info("PATCH-запрос к эндпоинту: '/bookings/bookingId' на обновление booking");
+        return bookingService.updateBookingApproved(userId, bookingId, approved);
     }
 
 }

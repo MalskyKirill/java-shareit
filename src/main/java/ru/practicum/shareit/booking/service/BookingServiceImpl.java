@@ -9,6 +9,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.enums.BookingStatus;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.model.Item;
@@ -56,4 +57,26 @@ public class BookingServiceImpl implements BookingService{
         log.info("создан новый booking с ID = {}", bookingDto.getId());
         return bookingDto;
     }
+
+    @Transactional
+    @Override
+    public BookingDto updateBookingApproved(Long userId, Long bookingId, Boolean approved) {
+        userRepository.findById(userId);
+
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> {
+            log.error("Booking with id " + bookingId + " not found");
+            throw new NotFoundException("Booking with id " + bookingId + " not found");
+        });
+
+        if(!userId.equals(booking.getItem().getOwner().getId())) {
+            throw new ValidationException("The user does not have the right to confirm the booking");
+        }
+
+        booking.setStatus(approved ? BookingStatus.APPROVED : BookingStatus.REJECTED);
+        BookingDto bookingDto = BookingMapper.mapToBookingDto(bookingRepository.save(booking));
+        log.info("обнавлен статус approved booking с ID = {}", bookingDto.getId());
+        return bookingDto;
+    }
+
+
 }
