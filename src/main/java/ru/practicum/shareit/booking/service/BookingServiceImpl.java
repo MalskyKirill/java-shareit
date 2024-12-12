@@ -78,5 +78,25 @@ public class BookingServiceImpl implements BookingService{
         return bookingDto;
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public BookingDto getBooking(Long userId, Long bookingId) {
+        userRepository.findById(userId);
+
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> {
+            log.error("Booking with id " + bookingId + " not found");
+            throw new NotFoundException("Booking with id " + bookingId + " not found");
+        });
+
+        if (!booking.getBooker().getId().equals(userId) && !booking.getItem().getOwner().getId().equals(userId)) {
+            log.error("Only the owner of the item or the person booking it can view the booking data");
+            throw new NotFoundException("Only the owner of the item or the person booking it can view the booking data");
+        }
+
+        BookingDto bookingDto = BookingMapper.mapToBookingDto(booking);
+        log.info("получен booking с ID = {}", bookingDto.getId());
+        return bookingDto;
+    }
+
 
 }

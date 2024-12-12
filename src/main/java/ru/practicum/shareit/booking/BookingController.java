@@ -31,4 +31,10 @@ public class BookingController {
         return bookingService.updateBookingApproved(userId, bookingId, approved);
     }
 
+    @GetMapping("/{bookingId}")
+    public BookingDto getBookingById(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long bookingId) {
+        log.info("GET-запрос к эндпоинту: '/bookings/bookingId' на получение booking");
+        return bookingService.getBooking(userId, bookingId);
+    }
+
 }

@@ -8,4 +8,6 @@ public interface BookingService {
 
 
     BookingDto updateBookingApproved(Long userId, Long bookingId, Boolean approved);
+
+    BookingDto getBooking(Long userId, Long bookingId);
 }
