@@ -14,17 +14,17 @@ public class BookingMapper {
         bookingDto.setStart(booking.getStart());
         bookingDto.setEnd(booking.getEnd());
         bookingDto.setItem(booking.getItem());
-        bookingDto.setBroker(booking.getBroker());
+        bookingDto.setBooker(booking.getBooker());
         bookingDto.setStatus(booking.getStatus());
         return bookingDto;
     }
 
-    public static Booking mapToBooking(BookingDtoRequest bookingDtoRequest, Item item, User broker) {
+    public static Booking mapToBooking(BookingDtoRequest bookingDtoRequest, Item item, User booker) {
         Booking booking = new Booking();
         booking.setStart(bookingDtoRequest.getStart());
         booking.setEnd(bookingDtoRequest.getEnd());
         booking.setItem(item);
-        booking.setBroker(broker);
+        booking.setBooker(booker);
         booking.setStatus(BookingStatus.WAITING);
         return booking;
     }

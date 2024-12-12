@@ -47,6 +47,7 @@ public class ItemServiceImpl implements ItemService {
         return itemDto;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDto> getAllItemsByUser(Long userId) {
         userService.getUser(userId);
@@ -64,6 +65,7 @@ public class ItemServiceImpl implements ItemService {
         return itemsDto;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDto> getSearchItemList(String text) {
         if (Objects.equals(text, "")) { // если передана пустая строка
@@ -79,15 +81,9 @@ public class ItemServiceImpl implements ItemService {
         return itemsDto;
     }
 
+    @Transactional
     @Override
     public ItemDto updateItem(Long userId, Long itemId, ItemDto itemDto) {
-//        userStorage.checkUser(userId);
-//        Item item = ItemMapper.mapToItem(itemDto, userId);
-//        item.setOwnerId(userId);
-//        item.setId(itemId);
-//        ItemDto updateItemDto = ItemMapper.mapToItemDto(itemStorage.update(item));
-//        log.info("обновлен item с ID = {}", itemId);
-//        return updateItemDto;
         userService.getUser(userId);
 
         Item item = itemRepository.findById(itemId).orElseThrow(() -> {
