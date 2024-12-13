@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -9,6 +10,7 @@ import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.enums.BookingState;
 import ru.practicum.shareit.enums.BookingStatus;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
@@ -17,6 +19,11 @@ import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -24,6 +31,7 @@ public class BookingServiceImpl implements BookingService{
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final Sort sortByDesc = Sort.by(Sort.Direction.DESC, "start");
 
     @Transactional
     @Override
@@ -61,8 +69,6 @@ public class BookingServiceImpl implements BookingService{
     @Transactional
     @Override
     public BookingDto updateBookingApproved(Long userId, Long bookingId, Boolean approved) {
-        userRepository.findById(userId);
-
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> {
             log.error("Booking with id " + bookingId + " not found");
             throw new NotFoundException("Booking with id " + bookingId + " not found");
@@ -81,7 +87,10 @@ public class BookingServiceImpl implements BookingService{
     @Transactional(readOnly = true)
     @Override
     public BookingDto getBooking(Long userId, Long bookingId) {
-        userRepository.findById(userId);
+        userRepository.findById(userId).orElseThrow(() -> {
+            log.error("User with id " + userId + " not found");
+            throw new NotFoundException("User with id " + userId + " not found");
+        });
 
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> {
             log.error("Booking with id " + bookingId + " not found");
@@ -96,6 +105,46 @@ public class BookingServiceImpl implements BookingService{
         BookingDto bookingDto = BookingMapper.mapToBookingDto(booking);
         log.info("получен booking с ID = {}", bookingDto.getId());
         return bookingDto;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<BookingDto> getAllBooking(Long userId, BookingState state) {
+        userRepository.findById(userId).orElseThrow(() -> {
+            log.error("User with id " + userId + " not found");
+            throw new NotFoundException("User with id " + userId + " not found");
+        });
+
+        List<Booking> bookings = new ArrayList<>();
+        switch (state) {
+            case ALL -> {
+                log.info("получен список всех бронирований у user с ID = {}", userId);
+                bookings.addAll(bookingRepository.findAllByBookerId(userId, sortByDesc));
+            }
+            case CURRENT -> {
+                log.info("получен список текущих бронирований у user с ID = {}", userId);
+                bookings.addAll(bookingRepository.findByBookerIdAndStartBeforeAndEndAfter(userId, LocalDateTime.now(), LocalDateTime.now(), sortByDesc));
+            }
+            case PAST -> {
+                log.info("получен список завершенных бронирований у user с ID = {}", userId);
+                bookings.addAll(bookingRepository.findByBookerIdAndEndBefore(userId, LocalDateTime.now(), sortByDesc));
+            }
+            case FUTURE -> {
+                log.info("получен список будующих бронирований у user с ID = {}", userId);
+                bookings.addAll(bookingRepository.findByBookerIdAndStartAfter(userId, LocalDateTime.now(), sortByDesc));
+            }
+            case WAITING -> {
+                log.info("получен список ожидающих подтверждения бронирований у user с ID = {}", userId);
+                bookings.addAll(bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.WAITING, sortByDesc));
+            }
+            case REJECTED -> {
+                log.info("получен список отмененных бронирований у user с ID = {}", userId);
+                bookings.addAll(bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.REJECTED, sortByDesc));
+            }
+            default -> throw new ValidationException("Unknown state: " + state);
+        }
+
+        return bookings.stream().map(BookingMapper::mapToBookingDto).collect(Collectors.toList());
     }
 
 
