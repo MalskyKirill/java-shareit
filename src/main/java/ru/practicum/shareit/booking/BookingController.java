@@ -46,4 +46,9 @@ public class BookingController {
         return bookingService.getAllBooking(userId, state);
     }
 
+    @GetMapping("/owner")
+    public List<BookingDto> getAllBookingByOwner(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestParam(defaultValue = "ALL") BookingState state) {
+        log.info("GET-запрос к эндпоинту: '/bookings/owner' на получение всех booking владельца");
+        return bookingService.getAllBookingByOwner(userId, state);
+    }
 }

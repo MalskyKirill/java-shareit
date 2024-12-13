@@ -147,5 +147,44 @@ public class BookingServiceImpl implements BookingService{
         return bookings.stream().map(BookingMapper::mapToBookingDto).collect(Collectors.toList());
     }
 
+    @Override
+    public List<BookingDto> getAllBookingByOwner(Long userId, BookingState state) {
+        userRepository.findById(userId).orElseThrow(() -> {
+            log.error("User with id " + userId + " not found");
+            throw new NotFoundException("User with id " + userId + " not found");
+        });
+
+        List<Booking> bookings = new ArrayList<>();
+        switch (state) {
+            case ALL -> {
+                log.info("получен список всех бронирований у owner с ID = {}", userId);
+                bookings.addAll(bookingRepository.findAllByItemOwnerId(userId, sortByDesc));
+            }
+            case CURRENT -> {
+                log.info("получен список текущих бронирований у owner с ID = {}", userId);
+                bookings.addAll(bookingRepository.findByItemOwnerIdAndStartBeforeAndEndAfter(userId, LocalDateTime.now(), LocalDateTime.now(), sortByDesc));
+            }
+            case PAST -> {
+                log.info("получен список завершенных бронирований у owner с ID = {}", userId);
+                bookings.addAll(bookingRepository.findByItemOwnerIdAndEndBefore(userId, LocalDateTime.now(), sortByDesc));
+            }
+            case FUTURE -> {
+                log.info("получен список будующих бронирований у owner с ID = {}", userId);
+                bookings.addAll(bookingRepository.findByItemOwnerIdAndStartAfter(userId, LocalDateTime.now(), sortByDesc));
+            }
+            case WAITING -> {
+                log.info("получен список ожидающих подтверждения бронирований у owner с ID = {}", userId);
+                bookings.addAll(bookingRepository.findByItemOwnerIdAndStatus(userId, BookingStatus.WAITING, sortByDesc));
+            }
+            case REJECTED -> {
+                log.info("получен список отмененных бронирований у owner с ID = {}", userId);
+                bookings.addAll(bookingRepository.findByItemOwnerIdAndStatus(userId, BookingStatus.REJECTED, sortByDesc));
+            }
+            default -> throw new ValidationException("Unknown state: " + state);
+        }
+
+        return bookings.stream().map(BookingMapper::mapToBookingDto).collect(Collectors.toList());
+    }
+
 
 }
