@@ -19,6 +19,8 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -43,11 +45,21 @@ public class CommentServiceImpl implements CommentService{
         Booking booking = bookingRepository.findByItemIdAndBookerIdAndStatusAndStartBefore(itemId, userId, BookingStatus.APPROVED, LocalDateTime.now());
 
         if(booking == null) {
+            log.error("The user did not book this item");
             throw new ValidationException("The user did not book this item");
         }
 
         Comment comment = CommentMapper.mapToComment(commentDto, item, user, LocalDateTime.now());
         commentRepository.save(comment);
+
+        log.info("A user's " + userId + " comment on the item "+ itemId +" was created");
         return CommentMapper.mapToCommentDtoResponse(comment);
+    }
+
+    @Override
+    public List<CommentDtoResponse> getAllCommentsByItemId(Long itemId) {
+        List<Comment> comments = commentRepository.findAllByItemId(itemId);
+        log.info("Comments on the item "+ itemId +" have been received from bd");
+        return comments.stream().map(CommentMapper::mapToCommentDtoResponse).collect(Collectors.toList());
     }
 }

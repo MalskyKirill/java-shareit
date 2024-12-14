@@ -7,6 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.comment.dto.CommentDtoResponse;
+import ru.practicum.shareit.comment.model.Comment;
+import ru.practicum.shareit.comment.service.CommentService;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBookingAndComments;
@@ -30,6 +33,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserService userService;
     private final BookingService bookingService;
+    private final CommentService commentService;
 
     @Transactional
     @Override
@@ -49,7 +53,9 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Item with id " + itemId + " not found");
         });
 
-        ItemDtoWithBookingAndComments itemDto = ItemMapper.mapToItemDtoWithBookingAndComments(item, null, null);
+        List<CommentDtoResponse> comments = commentService.getAllCommentsByItemId(itemId);
+
+        ItemDtoWithBookingAndComments itemDto = ItemMapper.mapToItemDtoWithBookingAndComments(item, null, null, comments);
 
         if (item.getOwner().getId().equals(userId)) { // если запрашивает владелец вещи
             BookingDtoItem nextBooking = bookingService.getNextBooking(itemId);
@@ -64,7 +70,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> getAllItemsByUser(Long userId) {
+    public List<ItemDtoWithBookingAndComments> getAllItemsByUser(Long userId) {
         userService.getUser(userId);
         List<Item> items = itemRepository.findItemsByOwnerId(userId);
         if (items == null) {
@@ -72,8 +78,11 @@ public class ItemServiceImpl implements ItemService {
             return null;
         }
 
-        List<ItemDto> itemsDto = items.stream()
-            .map(ItemMapper::mapToItemDto)
+        List<ItemDtoWithBookingAndComments> itemsDto = items.stream()
+            .map(item -> {
+                List<CommentDtoResponse> comments = commentService.getAllCommentsByItemId(item.getId());
+                return ItemMapper.mapToItemDtoWithBookingAndComments(item, bookingService.getNextBooking(item.getId()), bookingService.getLastBooking(item.getId()), comments);
+            })
             .toList(); // бежим по коллекции item и мапим каждый в itemDto
 
         log.info("получен список item у пользователя с ID = {}", userId);

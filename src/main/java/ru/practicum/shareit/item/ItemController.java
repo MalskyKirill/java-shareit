@@ -33,7 +33,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemsByUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemDtoWithBookingAndComments> getAllItemsByUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("GET-запрос к эндпоинту: '/items' на получение всех item у user с ID={}", userId);
         return itemService.getAllItemsByUser(userId);
     }

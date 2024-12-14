@@ -10,7 +10,7 @@ public interface ItemService {
 
     ItemDtoWithBookingAndComments getItem(Long userId, Long itemId);
 
-    List<ItemDto> getAllItemsByUser(Long userId);
+    List<ItemDtoWithBookingAndComments> getAllItemsByUser(Long userId);
 
     List<ItemDto> getSearchItemList(String text);
 
