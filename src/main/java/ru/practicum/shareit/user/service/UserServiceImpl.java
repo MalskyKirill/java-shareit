@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
                 .filter(user -> user.getEmail().equals(userDto.getEmail()))
                 .toList();
 
-            if(matchEmailUsers.isEmpty()) {
+            if (matchEmailUsers.isEmpty()) {
                 updateUser.setEmail(userDto.getEmail());
             } else {
                 log.error("User with e-mail " + userDto.getEmail() + " already created");

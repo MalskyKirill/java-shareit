@@ -5,10 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDtoItem;
-import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.comment.dto.CommentDtoResponse;
-import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.comment.service.CommentService;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -19,8 +17,6 @@ import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.user.storage.UserRepository;
-
 
 import java.util.ArrayList;
 import java.util.List;

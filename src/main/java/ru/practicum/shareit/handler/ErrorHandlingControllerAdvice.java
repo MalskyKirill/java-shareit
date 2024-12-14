@@ -52,5 +52,4 @@ public class ErrorHandlingControllerAdvice {
     public ErrorResponse onValidationException(ValidationException e) {
         return new ErrorResponse("ValidationException", e.getMessage());
     }
-
 }

@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class CommentServiceImpl implements CommentService{
+public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
@@ -44,7 +44,7 @@ public class CommentServiceImpl implements CommentService{
 
         Booking booking = bookingRepository.findByItemIdAndBookerIdAndStatusAndStartBefore(itemId, userId, BookingStatus.APPROVED, LocalDateTime.now());
 
-        if(booking == null) {
+        if (booking == null) {
             log.error("The user did not book this item");
             throw new ValidationException("The user did not book this item");
         }
@@ -52,14 +52,14 @@ public class CommentServiceImpl implements CommentService{
         Comment comment = CommentMapper.mapToComment(commentDto, item, user, LocalDateTime.now());
         commentRepository.save(comment);
 
-        log.info("A user's " + userId + " comment on the item "+ itemId +" was created");
+        log.info("A user's " + userId + " comment on the item " + itemId + " was created");
         return CommentMapper.mapToCommentDtoResponse(comment);
     }
 
     @Override
     public List<CommentDtoResponse> getAllCommentsByItemId(Long itemId) {
         List<Comment> comments = commentRepository.findAllByItemId(itemId);
-        log.info("Comments on the item "+ itemId +" have been received from bd");
+        log.info("Comments on the item " + itemId + " have been received from bd");
         return comments.stream().map(CommentMapper::mapToCommentDtoResponse).collect(Collectors.toList());
     }
 }

@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class BookingServiceImpl implements BookingService{
+public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
@@ -46,17 +46,17 @@ public class BookingServiceImpl implements BookingService{
             throw new NotFoundException("Item with id " + bookingDtoRequest.getItemId() + " not found");
         });
 
-        if(!item.getAvailable()) {
+        if (!item.getAvailable()) {
             log.error("Item with id " + bookingDtoRequest.getItemId() + " not available");
             throw new ValidationException("Item with id " + bookingDtoRequest.getItemId() + " not available");
         }
 
-        if(bookingDtoRequest.getStart().equals(bookingDtoRequest.getEnd())) {
+        if (bookingDtoRequest.getStart().equals(bookingDtoRequest.getEnd())) {
             log.error("The start time of the booking cannot be equal to the end time of the booking");
             throw new ValidationException("The start time of the booking cannot be equal to the end time of the booking");
         }
 
-        if(item.getOwner().getId().equals(userId)) {
+        if (item.getOwner().getId().equals(userId)) {
             log.error("The user cannot book an item belonging to him");
             throw new ValidationException("The user cannot book an item belonging to him");
         }
@@ -75,7 +75,7 @@ public class BookingServiceImpl implements BookingService{
             throw new NotFoundException("Booking with id " + bookingId + " not found");
         });
 
-        if(!userId.equals(booking.getItem().getOwner().getId())) {
+        if (!userId.equals(booking.getItem().getOwner().getId())) {
             throw new ValidationException("The user does not have the right to confirm the booking");
         }
 

@@ -49,5 +49,4 @@ public class ItemController {
         log.info("PATCH-запрос к эндпоинту: '/items' на обновление item с ID={}", itemId);
         return itemService.updateItem(userId, itemId, itemDto);
     }
-
 }
