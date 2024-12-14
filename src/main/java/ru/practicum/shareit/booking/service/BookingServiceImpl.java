@@ -6,6 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -147,6 +148,7 @@ public class BookingServiceImpl implements BookingService{
         return bookings.stream().map(BookingMapper::mapToBookingDto).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<BookingDto> getAllBookingByOwner(Long userId, BookingState state) {
         userRepository.findById(userId).orElseThrow(() -> {
@@ -184,6 +186,22 @@ public class BookingServiceImpl implements BookingService{
         }
 
         return bookings.stream().map(BookingMapper::mapToBookingDto).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public BookingDtoItem getNextBooking(Long itemId) {
+        //хз какая логика тестов нет
+        log.info("получено следующее бронирование у item с ID = {}", itemId);
+        return null;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public BookingDtoItem getLastBooking(Long itemId) {
+        //хз какая логика тестов нет
+        log.info("получено последнее бронирование у item с ID = {}", itemId);
+        return null;
     }
 
 

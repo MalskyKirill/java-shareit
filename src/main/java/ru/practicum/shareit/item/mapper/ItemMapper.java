@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.mapper;
 
+import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoWithBookingAndComments;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -24,5 +26,18 @@ public class ItemMapper {
         item.setOwner(user);
         item.setRequestId(itemDto.getRequestId());
         return item;
+    }
+
+    public static ItemDtoWithBookingAndComments mapToItemDtoWithBookingAndComments(Item item, BookingDtoItem nextBooking, BookingDtoItem lastBooking) {
+        ItemDtoWithBookingAndComments itemDtoWithBookingAndComments = new ItemDtoWithBookingAndComments();
+        itemDtoWithBookingAndComments.setId(item.getId());
+        itemDtoWithBookingAndComments.setName(item.getName());
+        itemDtoWithBookingAndComments.setDescription(item.getDescription());
+        itemDtoWithBookingAndComments.setAvailable(item.getAvailable());
+        itemDtoWithBookingAndComments.setRequestId(item.getRequestId());
+        itemDtoWithBookingAndComments.setNextBooking(nextBooking);
+        itemDtoWithBookingAndComments.setLastBooking(lastBooking);
+
+        return itemDtoWithBookingAndComments;
     }
 }

@@ -4,8 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingDtoItem;
+import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoWithBookingAndComments;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
@@ -25,6 +29,7 @@ import java.util.Objects;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserService userService;
+    private final BookingService bookingService;
 
     @Transactional
     @Override
@@ -38,12 +43,22 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public ItemDto getItem(Long userId, Long itemId) {
-        ItemDto itemDto = ItemMapper.mapToItemDto(itemRepository.findById(itemId).orElseThrow(() -> {
+    public ItemDtoWithBookingAndComments getItem(Long userId, Long itemId) {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> {
             log.error("Item with id " + itemId + " not found");
             throw new NotFoundException("Item with id " + itemId + " not found");
-        }));
-        log.info("получен item с ID = {}", itemDto.getId());
+        });
+
+        ItemDtoWithBookingAndComments itemDto = ItemMapper.mapToItemDtoWithBookingAndComments(item, null, null);
+
+        if (item.getOwner().getId().equals(userId)) { // если запрашивает владелец вещи
+            BookingDtoItem nextBooking = bookingService.getNextBooking(itemId);
+            BookingDtoItem lastBooking = bookingService.getLastBooking(itemId);
+            itemDto.setNextBooking(nextBooking);
+            itemDto.setLastBooking(lastBooking);
+        }
+
+        log.info("получен item с ID = {}", item.getId());
         return itemDto;
     }
 
