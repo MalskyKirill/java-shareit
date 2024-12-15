@@ -37,10 +37,8 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingDto createBooking(BookingDtoRequest bookingDtoRequest, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> {
-            log.error("User with id " + userId + " not found");
-            throw new NotFoundException("User with id " + userId + " not found");
-        });
+        User user = getUser(userId);
+
         Item item = itemRepository.findById(bookingDtoRequest.getItemId()).orElseThrow(() -> {
             log.error("Item with id " + bookingDtoRequest.getItemId() + " not found");
             throw new NotFoundException("Item with id " + bookingDtoRequest.getItemId() + " not found");
@@ -70,10 +68,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingDto updateBookingApproved(Long userId, Long bookingId, Boolean approved) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> {
-            log.error("Booking with id " + bookingId + " not found");
-            throw new NotFoundException("Booking with id " + bookingId + " not found");
-        });
+        Booking booking = getBooking(bookingId);
 
         if (!userId.equals(booking.getItem().getOwner().getId())) {
             throw new ValidationException("The user does not have the right to confirm the booking");
@@ -88,15 +83,8 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     @Override
     public BookingDto getBooking(Long userId, Long bookingId) {
-        userRepository.findById(userId).orElseThrow(() -> {
-            log.error("User with id " + userId + " not found");
-            throw new NotFoundException("User with id " + userId + " not found");
-        });
-
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> {
-            log.error("Booking with id " + bookingId + " not found");
-            throw new NotFoundException("Booking with id " + bookingId + " not found");
-        });
+        getUser(userId);
+        Booking booking = getBooking(bookingId);
 
         if (!booking.getBooker().getId().equals(userId) && !booking.getItem().getOwner().getId().equals(userId)) {
             log.error("Only the owner of the item or the person booking it can view the booking data");
@@ -111,10 +99,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     @Override
     public List<BookingDto> getAllBooking(Long userId, BookingState state) {
-        userRepository.findById(userId).orElseThrow(() -> {
-            log.error("User with id " + userId + " not found");
-            throw new NotFoundException("User with id " + userId + " not found");
-        });
+        getUser(userId);
 
         List<Booking> bookings = new ArrayList<>();
         switch (state) {
@@ -151,10 +136,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = true)
     @Override
     public List<BookingDto> getAllBookingByOwner(Long userId, BookingState state) {
-        userRepository.findById(userId).orElseThrow(() -> {
-            log.error("User with id " + userId + " not found");
-            throw new NotFoundException("User with id " + userId + " not found");
-        });
+        getUser(userId);
 
         List<Booking> bookings = new ArrayList<>();
         switch (state) {
@@ -204,5 +186,17 @@ public class BookingServiceImpl implements BookingService {
         return null;
     }
 
+    private User getUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> {
+            log.error("User with id " + userId + " not found");
+            throw new NotFoundException("User with id " + userId + " not found");
+        });
+    }
 
+    private Booking getBooking(Long bookingId) {
+        return bookingRepository.findById(bookingId).orElseThrow(() -> {
+            log.error("Booking with id " + bookingId + " not found");
+            throw new NotFoundException("Booking with id " + bookingId + " not found");
+        });
+    }
 }
