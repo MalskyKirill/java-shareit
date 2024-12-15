@@ -37,6 +37,11 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingDto createBooking(BookingDtoRequest bookingDtoRequest, Long userId) {
+        if (bookingDtoRequest.getStart().equals(bookingDtoRequest.getEnd()) || bookingDtoRequest.getEnd().isBefore(bookingDtoRequest.getStart())) {
+            log.error("The end time of the booking cannot be equal or before to the start time of the booking");
+            throw new ValidationException("The end time of the booking cannot be equal or before to the start time of the booking");
+        }
+
         User user = getUser(userId);
 
         Item item = itemRepository.findById(bookingDtoRequest.getItemId()).orElseThrow(() -> {
@@ -47,11 +52,6 @@ public class BookingServiceImpl implements BookingService {
         if (!item.getAvailable()) {
             log.error("Item with id " + bookingDtoRequest.getItemId() + " not available");
             throw new ValidationException("Item with id " + bookingDtoRequest.getItemId() + " not available");
-        }
-
-        if (bookingDtoRequest.getStart().equals(bookingDtoRequest.getEnd())) {
-            log.error("The start time of the booking cannot be equal to the end time of the booking");
-            throw new ValidationException("The start time of the booking cannot be equal to the end time of the booking");
         }
 
         if (item.getOwner().getId().equals(userId)) {
