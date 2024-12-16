@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.practicum.shareit.exceptions.AlreadyExistsException;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.ValidationException;
 
 import java.util.List;
 
@@ -43,5 +44,12 @@ public class ErrorHandlingControllerAdvice {
     @ResponseBody
     public ErrorResponse onNotFoundException(NotFoundException e) {
         return new ErrorResponse("NotFoundException", e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ValidationException.class)
+    @ResponseBody
+    public ErrorResponse onValidationException(ValidationException e) {
+        return new ErrorResponse("ValidationException", e.getMessage());
     }
 }
