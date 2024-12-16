@@ -99,7 +99,6 @@ public class ItemServiceImpl implements ItemService {
                 if (commentsDto.get(i) == null) {
                     return ItemMapper.mapToItemDtoWithBookingAndComments(i, next, last, null);
                 }
-                
                 List<CommentDtoResponse> comments = commentsDto.get(i);
 
                 return ItemMapper.mapToItemDtoWithBookingAndComments(i, next, last, comments);
