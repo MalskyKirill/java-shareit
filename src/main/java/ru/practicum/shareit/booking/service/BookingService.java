@@ -4,8 +4,11 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.enums.BookingState;
+import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public interface BookingService {
     BookingDto createBooking(BookingDtoRequest bookingDtoRequest, Long userId);
@@ -18,7 +21,7 @@ public interface BookingService {
 
     List<BookingDto> getAllBookingByOwner(Long userId, BookingState state);
 
-    BookingDtoItem getNextBooking(Long itemId);
+    List<BookingDtoItem> getAllBookingsByItem(Long itemId);
 
-    BookingDtoItem getLastBooking(Long itemId);
+    Map<Long, List<BookingDtoItem>> getAllBookingsBySomeItems(List<Long> itemIds);
 }

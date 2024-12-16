@@ -21,8 +21,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +32,7 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final Sort sortByDesc = Sort.by(Sort.Direction.DESC, "start");
+    private final Sort sortByAsc = Sort.by(Sort.Direction.ASC, "start");
 
     @Transactional
     @Override
@@ -170,20 +170,30 @@ public class BookingServiceImpl implements BookingService {
         return bookings.stream().map(BookingMapper::mapToBookingDto).collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public BookingDtoItem getNextBooking(Long itemId) {
-        //хз какая логика тестов нет
-        log.info("получено следующее бронирование у item с ID = {}", itemId);
-        return null;
+    public List<BookingDtoItem> getAllBookingsByItem(Long itemId) {
+        List<Booking> bookings = bookingRepository.findAllByItemId(itemId, sortByAsc);
+        log.info("Bookings on the item " + itemId + " have been received from bd");
+        return bookings.stream().map(BookingMapper::mapToBookingDtoItem).collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public BookingDtoItem getLastBooking(Long itemId) {
-        //хз какая логика тестов нет
-        log.info("получено последнее бронирование у item с ID = {}", itemId);
-        return null;
+    public Map<Long, List<BookingDtoItem>> getAllBookingsBySomeItems(List<Long> itemIds) {
+        List<Booking> bookings = bookingRepository.findByItemIdIn(itemIds, sortByAsc);
+        log.info("Bookings on the items " + itemIds + " have been received from bd");
+        System.out.println(bookings);
+        Map<Long, List<BookingDtoItem>> mapBookingDtoItem = new HashMap<>();
+
+        for (Booking b : bookings) {
+            if (!mapBookingDtoItem.containsKey(b.getItem().getId())) {
+                mapBookingDtoItem.put(b.getItem().getId(), new ArrayList<>());
+            }
+
+            List<BookingDtoItem> list = mapBookingDtoItem.get(b.getItem().getId());
+            list.add(BookingMapper.mapToBookingDtoItem(b));
+        }
+
+        return mapBookingDtoItem;
     }
 
     private User getUser(Long userId) {

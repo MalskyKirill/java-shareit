@@ -2,6 +2,7 @@ package ru.practicum.shareit.comment.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -19,7 +20,10 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +34,8 @@ public class CommentServiceImpl implements CommentService {
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+
+    private final Sort sortByDesc = Sort.by(Sort.Direction.DESC, "created");
 
     @Override
     public CommentDtoResponse createComment(CommentDto commentDto, Long userId, Long itemId) {
@@ -61,5 +67,24 @@ public class CommentServiceImpl implements CommentService {
         List<Comment> comments = commentRepository.findAllByItemId(itemId);
         log.info("Comments on the item " + itemId + " have been received from bd");
         return comments.stream().map(CommentMapper::mapToCommentDtoResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<Item, List<CommentDtoResponse>> getAllCommentsBySomeItems(List<Long> itemIds) {
+        List<Comment> comments = commentRepository.findByItemIdIn(itemIds, sortByDesc);
+        log.info("Comments on the items " + itemIds + " have been received from bd");
+
+        Map<Item, List<CommentDtoResponse>> mapCommentsDtoResp = new HashMap<>();
+
+        for (Comment c : comments) {
+            if (!mapCommentsDtoResp.containsKey(c.getItem())) {
+                mapCommentsDtoResp.put(c.getItem(), new ArrayList<>());
+            }
+
+            List<CommentDtoResponse> list = mapCommentsDtoResp.get(c.getItem());
+            list.add(CommentMapper.mapToCommentDtoResponse(c));
+        }
+
+        return mapCommentsDtoResp;
     }
 }

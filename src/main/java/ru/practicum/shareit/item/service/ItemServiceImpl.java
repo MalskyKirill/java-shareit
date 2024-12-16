@@ -18,9 +18,12 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -54,10 +57,13 @@ public class ItemServiceImpl implements ItemService {
         ItemDtoWithBookingAndComments itemDto = ItemMapper.mapToItemDtoWithBookingAndComments(item, null, null, comments);
 
         if (item.getOwner().getId().equals(userId)) { // если запрашивает владелец вещи
-            BookingDtoItem nextBooking = bookingService.getNextBooking(itemId);
-            BookingDtoItem lastBooking = bookingService.getLastBooking(itemId);
-            itemDto.setNextBooking(nextBooking);
-            itemDto.setLastBooking(lastBooking);
+            List<BookingDtoItem> bookings = bookingService.getAllBookingsByItem(itemId);
+
+            BookingDtoItem last = bookings.getLast();
+            BookingDtoItem next = bookings.stream().filter(b -> b.getStart().isAfter(LocalDateTime.now())).findFirst().orElse(null);
+
+            itemDto.setNextBooking(next);
+            itemDto.setLastBooking(last);
         }
 
         log.info("получен item с ID = {}", item.getId());
@@ -74,10 +80,29 @@ public class ItemServiceImpl implements ItemService {
             return null;
         }
 
+        List<Long> itemsId = items.stream().map(Item::getId).collect(Collectors.toList());
+
+        Map<Long, List<BookingDtoItem>> bookingsDto = bookingService.getAllBookingsBySomeItems(itemsId);
+        Map<Item, List<CommentDtoResponse>> commentsDto = commentService.getAllCommentsBySomeItems(itemsId);
+
+
         List<ItemDtoWithBookingAndComments> itemsDto = items.stream()
-            .map(item -> {
-                List<CommentDtoResponse> comments = commentService.getAllCommentsByItemId(item.getId());
-                return ItemMapper.mapToItemDtoWithBookingAndComments(item, bookingService.getNextBooking(item.getId()), bookingService.getLastBooking(item.getId()), comments);
+            .map(i -> {
+
+                if (bookingsDto.get(i.getId()) == null) {
+                    return ItemMapper.mapToItemDtoWithBookingAndComments(i, null, null, null);
+                }
+
+                BookingDtoItem next = bookingsDto.get(i.getId()).stream().filter(b -> b.getStart().isAfter(LocalDateTime.now())).findFirst().orElseThrow(null);
+                BookingDtoItem last = bookingsDto.get(i.getId()).getLast();
+
+                if (commentsDto.get(i) == null) {
+                    return ItemMapper.mapToItemDtoWithBookingAndComments(i, next, last, null);
+                }
+                
+                List<CommentDtoResponse> comments = commentsDto.get(i);
+
+                return ItemMapper.mapToItemDtoWithBookingAndComments(i, next, last, comments);
             })
             .toList(); // бежим по коллекции item и мапим каждый в itemDto
 
