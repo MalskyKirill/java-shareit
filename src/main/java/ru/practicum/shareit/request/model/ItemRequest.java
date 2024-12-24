@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
+
 /**
  * TODO Sprint add-item-requests.
  */
@@ -20,4 +22,5 @@ public class ItemRequest {
     @ManyToOne
     @JoinColumn(name = "requestor_id")
     private User requestor;
+    private LocalDateTime created;
 }
