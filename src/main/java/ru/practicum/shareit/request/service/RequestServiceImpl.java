@@ -40,6 +40,7 @@ public class RequestServiceImpl implements RequestService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ItemRequestDtoResp> getAllRequestsByOwner(Long userId) {
         getUser(userId);
 
@@ -47,6 +48,18 @@ public class RequestServiceImpl implements RequestService{
         log.info("requestsList on the user " + userId + " have been received from bd");
 
         return requestsList.stream().map(ItemRequestMapper::mapToItemRequestDtoResp).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ItemRequestDtoResp getRequestById(Long userId, Long requestId) {
+        getUser(userId);
+        ItemRequest itemRequest = repository.findById(requestId).orElseThrow(() -> {
+            log.error("request with id " + requestId + " not found");
+            throw new NotFoundException("request with id " + requestId + " not found");
+        });
+        log.info("request on the user " + userId + " have been received from bd");
+        return ItemRequestMapper.mapToItemRequestDtoResp(itemRequest);
     }
 
 
