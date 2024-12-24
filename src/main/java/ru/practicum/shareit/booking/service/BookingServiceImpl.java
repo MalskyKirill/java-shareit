@@ -181,7 +181,7 @@ public class BookingServiceImpl implements BookingService {
     public Map<Long, List<BookingDtoItem>> getAllBookingsBySomeItems(List<Long> itemIds) {
         List<Booking> bookings = bookingRepository.findByItemIdIn(itemIds, sortByAsc);
         log.info("Bookings on the items " + itemIds + " have been received from bd");
-        System.out.println(bookings);
+
         Map<Long, List<BookingDtoItem>> mapBookingDtoItem = new HashMap<>();
 
         for (Booking b : bookings) {
