@@ -6,6 +6,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResp;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class RequestServiceImpl implements RequestService{
     private final RequestRepository repository;
     private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
     private final Sort sortByDesc = Sort.by(Sort.Direction.DESC, "created");
 
@@ -54,11 +57,15 @@ public class RequestServiceImpl implements RequestService{
     @Transactional(readOnly = true)
     public ItemRequestDtoResp getRequestById(Long userId, Long requestId) {
         getUser(userId);
+
         ItemRequest itemRequest = repository.findById(requestId).orElseThrow(() -> {
             log.error("request with id " + requestId + " not found");
             throw new NotFoundException("request with id " + requestId + " not found");
         });
+
         log.info("request on the user " + userId + " have been received from bd");
+        List<Item> items = itemRepository.findAllByItemRequest(itemRequest);
+        System.out.println(items);
         return ItemRequestMapper.mapToItemRequestDtoResp(itemRequest);
     }
 

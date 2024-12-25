@@ -16,7 +16,7 @@ public class ItemMapper {
         itemDto.setName(item.getName());
         itemDto.setDescription(item.getDescription());
         itemDto.setAvailable(item.getAvailable());
-        itemDto.setRequestId(item.getRequestId());
+        itemDto.setRequestId(item.getItemRequest() == null ? null : item.getItemRequest().getId());
         return itemDto;
     }
 
@@ -27,7 +27,6 @@ public class ItemMapper {
         item.setDescription(itemDto.getDescription());
         item.setAvailable(itemDto.getAvailable());
         item.setOwner(user);
-        item.setRequestId(itemDto.getRequestId());
         return item;
     }
 
@@ -37,7 +36,7 @@ public class ItemMapper {
         itemDtoWithBookingAndComments.setName(item.getName());
         itemDtoWithBookingAndComments.setDescription(item.getDescription());
         itemDtoWithBookingAndComments.setAvailable(item.getAvailable());
-        itemDtoWithBookingAndComments.setRequestId(item.getRequestId());
+        itemDtoWithBookingAndComments.setRequestId(item.getItemRequest() == null ? null : item.getItemRequest().getId());
         itemDtoWithBookingAndComments.setNextBooking(nextBooking);
         itemDtoWithBookingAndComments.setLastBooking(lastBooking);
         itemDtoWithBookingAndComments.setComments(comments);

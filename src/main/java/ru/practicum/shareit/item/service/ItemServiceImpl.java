@@ -14,6 +14,7 @@ import ru.practicum.shareit.item.dto.ItemDtoWithBookingAndComments;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
+import ru.practicum.shareit.request.repository.RequestRepository;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
@@ -33,12 +34,21 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final BookingService bookingService;
     private final CommentService commentService;
+    private final RequestRepository requestRepository;
 
     @Transactional
     @Override
     public ItemDto createItem(ItemDto itemDto, Long ownerId) {
         User owner = UserMapper.mapToUser(userService.getUser(ownerId));
+        System.out.println(itemDto);
         Item item = ItemMapper.mapToItem(itemDto, owner);
+        if (itemDto.getRequestId() != null) {
+            item.setItemRequest(requestRepository.findById(itemDto.getRequestId()).orElseThrow(() -> {
+                log.error("request with id " + itemDto.getRequestId() + " not found");
+                throw new NotFoundException("request with id " + itemDto.getRequestId() + " not found");
+            }));
+        }
+
         ItemDto newItemDto = ItemMapper.mapToItemDto(itemRepository.save(item));
         log.info("создан новый item с ID = {}", newItemDto.getId());
         return newItemDto;

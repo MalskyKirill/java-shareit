@@ -20,9 +20,9 @@ public class ErrorHandlingControllerAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
     public ValidationErrorResponse onMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        final List<Violation> violations = e.getBindingResult().getFieldErrors()
+        final List<Violation> error = e.getBindingResult().getFieldErrors()
             .stream().map(err -> new Violation(err.getField(), err.getDefaultMessage())).toList();
-        return new ValidationErrorResponse(violations);
+        return new ValidationErrorResponse(error);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
