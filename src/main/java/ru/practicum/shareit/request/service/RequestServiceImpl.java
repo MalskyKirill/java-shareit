@@ -17,7 +17,9 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,7 +52,15 @@ public class RequestServiceImpl implements RequestService{
         List<ItemRequest> requestsList = repository.findAllByRequestorId(userId, sortByDesc);
         log.info("requestsList on the user " + userId + " have been received from bd");
 
-        return requestsList.stream().map(ItemRequestMapper::mapToItemRequestDtoResp).collect(Collectors.toList());
+        List<Item> itemsList = itemRepository.findAllByItemRequestIn(requestsList);
+
+        List<ItemRequestDtoResp> response = new ArrayList<>();
+
+        for (ItemRequest request : requestsList) {
+            response.add(ItemRequestMapper.mapToItemRequestDtoResp(request, itemsList.stream().filter(item -> Objects.equals(item.getItemRequest().getId(), request.getId())).collect(Collectors.toList())));
+        }
+
+        return response;
     }
 
     @Override
@@ -65,8 +75,7 @@ public class RequestServiceImpl implements RequestService{
 
         log.info("request on the user " + userId + " have been received from bd");
         List<Item> items = itemRepository.findAllByItemRequest(itemRequest);
-        System.out.println(items);
-        return ItemRequestMapper.mapToItemRequestDtoResp(itemRequest);
+        return ItemRequestMapper.mapToItemRequestDtoResp(itemRequest, items);
     }
 
 

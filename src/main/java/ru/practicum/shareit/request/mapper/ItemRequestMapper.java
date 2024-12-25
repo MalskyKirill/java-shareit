@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request.mapper;
 
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResp;
 import ru.practicum.shareit.request.model.ItemRequest;
@@ -7,6 +8,7 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ItemRequestMapper {
 
@@ -25,6 +27,17 @@ public class ItemRequestMapper {
         itemRequestDtoResp.setDescription(itemRequest.getDescription());
         itemRequestDtoResp.setRequestor(UserMapper.mapToUserDto(itemRequest.getRequestor()));
         itemRequestDtoResp.setCreated(itemRequest.getCreated());
+
+        return itemRequestDtoResp;
+    }
+
+    public static ItemRequestDtoResp mapToItemRequestDtoResp(ItemRequest itemRequest, List<Item> itemList) {
+        ItemRequestDtoResp itemRequestDtoResp = new ItemRequestDtoResp();
+        itemRequestDtoResp.setId(itemRequest.getId());
+        itemRequestDtoResp.setDescription(itemRequest.getDescription());
+        itemRequestDtoResp.setRequestor(UserMapper.mapToUserDto(itemRequest.getRequestor()));
+        itemRequestDtoResp.setCreated(itemRequest.getCreated());
+        itemRequestDtoResp.setItems(itemList);
 
         return itemRequestDtoResp;
     }
