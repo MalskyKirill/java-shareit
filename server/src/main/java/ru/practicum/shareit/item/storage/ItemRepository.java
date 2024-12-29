@@ -16,5 +16,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findAllByItemRequest(ItemRequest itemRequest);
 
-    List<Item> findAllByItemRequestIn(List<ItemRequest> requestsList);
+    List<Item> findAllByItemRequestIn(java.util.List<ru.practicum.shareit.request.model.ItemRequest> requestsList);
 }
