@@ -3,13 +3,7 @@ package ru.practicum.shareit.booking;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -18,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.booking.dto.BookItemRequestDto;
 import ru.practicum.shareit.booking.dto.BookingState;
+
+import java.util.List;
 
 
 @Controller
@@ -52,4 +48,16 @@ public class BookingController {
 		log.info("Get booking {}, userId={}", bookingId, userId);
 		return bookingClient.getBooking(userId, bookingId);
 	}
+
+    @PatchMapping("/{bookingId}")
+    public ResponseEntity<Object> updateBooking(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable Long bookingId, @RequestParam Boolean approved) {
+        log.info("PATCH-запрос к эндпоинту: '/bookings/bookingId' на обновление booking");
+        return bookingClient.updateBookingApproved(userId, bookingId, approved);
+    }
+
+    @GetMapping("/owner")
+    public ResponseEntity<Object> getAllBookingByOwner(@RequestHeader("X-Sharer-User-Id") Long userId, @RequestParam(defaultValue = "ALL") BookingState state) {
+        log.info("GET-запрос к эндпоинту: '/bookings/owner' на получение всех booking владельца");
+        return bookingClient.getAllBookingByOwner(userId, state);
+    }
 }
