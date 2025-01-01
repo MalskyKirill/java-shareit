@@ -32,15 +32,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto createUser(UserDto userDto) {
-        try {
-            User user = UserMapper.mapToUser(userDto);
-            UserDto newUserDto = UserMapper.mapToUserDto(userRepository.save(user));
-            log.info("создан новый user с ID = {}", newUserDto.getId());
-            return newUserDto;
-        } catch (DataIntegrityViolationException ex) {
-            log.error("User with e-mail " + userDto.getEmail() + " already created");
-            throw new AlreadyExistsException("User with e-mail " + userDto.getEmail() + " already created");
-        }
+        User user = UserMapper.mapToUser(userDto);
+        UserDto newUserDto = UserMapper.mapToUserDto(userRepository.save(user));
+        log.info("создан новый user с ID = {}", newUserDto.getId());
+        return newUserDto;
     }
 
     @Transactional
