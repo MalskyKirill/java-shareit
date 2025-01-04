@@ -35,7 +35,7 @@ class UserServiceImplTest {
 
     @BeforeAll
     static void setUp() {
-        user = new User(1L, "name", "user1@mail.com");
+        user = new User(1L, "Kirill", "kirill@shareit.ru");
         userDto = UserMapper.mapToUserDto(user);
     }
 
