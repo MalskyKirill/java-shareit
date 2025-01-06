@@ -19,7 +19,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 
 
 @Transactional
-@SpringBootTest(properties = "jdbc.url=jdbc:postgresql://localhost:5432/test", webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class IntegrationItemTest {
     private final ItemService itemService;

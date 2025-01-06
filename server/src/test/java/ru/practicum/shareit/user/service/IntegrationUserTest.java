@@ -8,24 +8,24 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 import org.junit.jupiter.api.Test;
 
-import static ru.practicum.shareit.TestUtils.owner;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static ru.practicum.shareit.TestUtils.user;
 
 @Transactional
-@SpringBootTest(properties = "jdbc.url=jdbc:postgresql://localhost:5432/test", webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class IntegrationUserTest {
     private final UserService userService;
 
     @Test
     public void getUserByIdTest() {
-        UserDto savedUser = userService.createUser(owner);
+        UserDto savedUser = userService.createUser(user);
         UserDto gottenUser = userService.getUser(savedUser.getId());
         assertThat(gottenUser.getId(), notNullValue());
-        assertThat(gottenUser.getName(), equalTo(owner.getName()));
-        assertThat(gottenUser.getEmail(), equalTo(owner.getEmail()));
+        assertThat(gottenUser.getName(), equalTo(user.getName()));
+        assertThat(gottenUser.getEmail(), equalTo(user.getEmail()));
         userService.deleteUser(savedUser.getId());
     }
 }

@@ -1,17 +1,24 @@
-package ru.practicum.shareit.item.service;
+package ru.practicum.shareit.comment.service;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Sort;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
+import ru.practicum.shareit.comment.dto.CommentDto;
+import ru.practicum.shareit.comment.dto.CommentDtoResponse;
+import ru.practicum.shareit.comment.mapper.CommentMapper;
+import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.comment.repository.CommentRepository;
-import ru.practicum.shareit.comment.service.CommentService;
-import ru.practicum.shareit.comment.service.CommentServiceImpl;
+import ru.practicum.shareit.enums.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBookingAndComments;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.request.repository.RequestRepository;
 import ru.practicum.shareit.user.model.User;
@@ -19,17 +26,17 @@ import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 import ru.practicum.shareit.user.storage.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-class ItemServiceImplTest {
+class CommentServiceImplTest {
     private final ItemRepository itemRepository = mock(ItemRepository.class);
     private final UserRepository userRepository = mock(UserRepository.class);
     private final UserService userService = new UserServiceImpl(userRepository);
@@ -43,50 +50,37 @@ class ItemServiceImplTest {
     private static User user;
     private static Item item;
     private static ItemDto itemDto;
-    private static ItemDtoWithBookingAndComments itemDtoWithBookingAndComments;
+
 
     @BeforeAll
     static void setUp() {
         user = new User(1L, "Kirill", "kirill@shareit.ru");
         item = new Item(1L, "Item1", "Description1", true, user, null);
-        itemDto = ItemMapper.mapToItemDto(item);
-        itemDtoWithBookingAndComments = ItemMapper.mapToItemDtoWithBookingAndComments(item, null, null, null);
-    }
+        itemDto = ItemMapper.mapToItemDto(item);}
 
     @Test
-    void createItem() {
-        when(itemRepository.save(any(Item.class)))
-            .thenReturn(item);
+    void createComment() {
+        Comment comment = new Comment(1L, "text", item, user, null);
+        CommentDtoResponse commentDtoR = CommentMapper.mapToCommentDtoResponse(comment);
+        CommentDto commentDto = new CommentDto("text");
+        Booking booking = new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item, user, BookingStatus.APPROVED);
+        when(commentRepository.save(any(Comment.class)))
+            .thenReturn(comment);
+        when(itemRepository.findById(anyLong()))
+            .thenReturn(Optional.of(item));
         when(userRepository.findById(anyLong()))
             .thenReturn(Optional.of(user));
-        ItemDto result = itemService.createItem(itemDto, 1L);
+        when(bookingRepository.findByItemIdAndBookerIdAndStatusAndStartBefore(anyLong(), anyLong(),
+                any(BookingStatus.class), any(LocalDateTime.class)))
+            .thenReturn(booking);
+        CommentDtoResponse result = commentService.createComment(commentDto, user.getId(), item.getId());
+        result.setId(1L);
         assertNotNull(result);
-        assertEquals(itemDto, result);
-        verify(itemRepository, times(1)).save(any(Item.class));
-        verify(userRepository, times(1)).findById(anyLong());
+        commentDtoR.setCreated(result.getCreated());
+        assertEquals(commentDtoR, result);
+        verify(commentRepository, times(1)).save(any(Comment.class));
     }
 
-    @Test
-    void getSearchItemList() {
-        when(itemRepository.getItemsBySearchQuery(anyString()))
-            .thenReturn(List.of(item));
-        List<ItemDto> result = itemService.getSearchItemList("item");
-        assertNotNull(result);
-        assertEquals(List.of(itemDto), result);
-        verify(itemRepository, times(1))
-            .getItemsBySearchQuery(anyString());
-    }
 
-    @Test
-    void getAllItemsByUser() {
-        when(itemRepository.findItemsByOwnerId(anyLong()))
-            .thenReturn(List.of(item));
-        when(userRepository.findById(anyLong()))
-            .thenReturn(Optional.of(user));
-        List<ItemDtoWithBookingAndComments> result = itemService.getAllItemsByUser(1L);
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(List.of(itemDtoWithBookingAndComments), result);
-        verify(itemRepository, times(1)).findItemsByOwnerId(anyLong());
-    }
+
 }
