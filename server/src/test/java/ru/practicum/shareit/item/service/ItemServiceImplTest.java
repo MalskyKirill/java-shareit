@@ -19,7 +19,6 @@ import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 import ru.practicum.shareit.user.storage.UserRepository;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 

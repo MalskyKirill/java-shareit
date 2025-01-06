@@ -32,14 +32,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-
-
 @SpringBootTest
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class BookingServiceImplTest {
 
-    private final BookingRepository bookingRepository = mock(BookingRepository.class);;
+    private final BookingRepository bookingRepository = mock(BookingRepository.class);
+    ;
     private final ItemRepository itemRepository = mock(ItemRepository.class);
     private final UserRepository userRepository = mock(UserRepository.class);
     private final BookingService bookingService = new BookingServiceImpl(bookingRepository,
@@ -228,5 +227,4 @@ class BookingServiceImplTest {
             assertTrue(e.getMessage().contains("The end time of the booking cannot be equal or before to the start time of the booking"));
         }
     }
-
 }

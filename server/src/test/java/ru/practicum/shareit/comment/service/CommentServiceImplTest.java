@@ -2,7 +2,6 @@ package ru.practicum.shareit.comment.service;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.service.BookingService;
@@ -14,7 +13,6 @@ import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.comment.repository.CommentRepository;
 import ru.practicum.shareit.enums.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDtoWithBookingAndComments;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
@@ -27,8 +25,6 @@ import ru.practicum.shareit.user.service.UserServiceImpl;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,7 +52,8 @@ class CommentServiceImplTest {
     static void setUp() {
         user = new User(1L, "Kirill", "kirill@shareit.ru");
         item = new Item(1L, "Item1", "Description1", true, user, null);
-        itemDto = ItemMapper.mapToItemDto(item);}
+        itemDto = ItemMapper.mapToItemDto(item);
+    }
 
     @Test
     void createComment() {
@@ -71,7 +68,7 @@ class CommentServiceImplTest {
         when(userRepository.findById(anyLong()))
             .thenReturn(Optional.of(user));
         when(bookingRepository.findByItemIdAndBookerIdAndStatusAndStartBefore(anyLong(), anyLong(),
-                any(BookingStatus.class), any(LocalDateTime.class)))
+            any(BookingStatus.class), any(LocalDateTime.class)))
             .thenReturn(booking);
         CommentDtoResponse result = commentService.createComment(commentDto, user.getId(), item.getId());
         result.setId(1L);
@@ -80,7 +77,4 @@ class CommentServiceImplTest {
         assertEquals(commentDtoR, result);
         verify(commentRepository, times(1)).save(any(Comment.class));
     }
-
-
-
 }
