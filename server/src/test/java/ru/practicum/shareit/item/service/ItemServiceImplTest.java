@@ -66,6 +66,23 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void updateItem() {
+        Item newItem = new Item(2L, "item", "best", true, user, null);
+        ItemDto itemUpdate = new ItemDto(2L, "newName", "newDis", true, null);
+        when(itemRepository.findById(anyLong()))
+            .thenReturn(Optional.of(newItem));
+        when(userRepository.findById(anyLong()))
+            .thenReturn(Optional.of(user));
+        when(itemRepository.save(any(Item.class)))
+            .thenReturn(ItemMapper.mapToItem(itemUpdate, user));
+        ItemDto result = itemService.updateItem(user.getId(), itemUpdate.getId(), itemUpdate);
+        assertNotNull(result);
+        assertEquals(itemUpdate, result);
+        verify(itemRepository, times(1)).save(any(Item.class));
+        verify(itemRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
     void getSearchItemList() {
         when(itemRepository.getItemsBySearchQuery(anyString()))
             .thenReturn(List.of(item));

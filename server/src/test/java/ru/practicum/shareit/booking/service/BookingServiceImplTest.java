@@ -224,4 +224,21 @@ class BookingServiceImplTest {
             assertTrue(e.getMessage().contains("The end time of the booking cannot be equal or before to the start time of the booking"));
         }
     }
+
+    @Test
+    public void shouldExceptionUpdateBookingApprovedWithFailUser() {
+        Booking bookingApr = new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item, booker,
+            BookingStatus.WAITING);
+        when(bookingRepository.findById(anyLong()))
+            .thenReturn(Optional.of(bookingApr));
+        when(bookingRepository.save(any(Booking.class)))
+            .thenReturn(bookingApr);
+
+        try {
+            bookingService.updateBookingApproved(2L, 1L, true);
+            fail("ValidationException expected");
+        } catch (ValidationException e) {
+            assertTrue(e.getMessage().contains("The user does not have the right to confirm the booking"));
+        }
+    }
 }
