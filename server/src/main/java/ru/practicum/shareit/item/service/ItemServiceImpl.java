@@ -43,10 +43,7 @@ public class ItemServiceImpl implements ItemService {
         System.out.println(itemDto);
         Item item = ItemMapper.mapToItem(itemDto, owner);
         if (itemDto.getRequestId() != null) {
-            item.setItemRequest(requestRepository.findById(itemDto.getRequestId()).orElseThrow(() -> {
-                log.error("request with id " + itemDto.getRequestId() + " not found");
-                throw new NotFoundException("request with id " + itemDto.getRequestId() + " not found");
-            }));
+            item.setItemRequest(requestRepository.findById(itemDto.getRequestId()).orElse(null));
         }
 
         ItemDto newItemDto = ItemMapper.mapToItemDto(itemRepository.save(item));
@@ -67,13 +64,13 @@ public class ItemServiceImpl implements ItemService {
         ItemDtoWithBookingAndComments itemDto = ItemMapper.mapToItemDtoWithBookingAndComments(item, null, null, comments);
 
         if (item.getOwner().getId().equals(userId)) { // если запрашивает владелец вещи
-            List<BookingDtoItem> bookings = bookingService.getAllBookingsByItem(itemId);
-
-            BookingDtoItem last = bookings.getLast();
-            BookingDtoItem next = bookings.stream().filter(b -> b.getStart().isAfter(LocalDateTime.now())).findFirst().orElse(null);
-
-            itemDto.setNextBooking(next);
-            itemDto.setLastBooking(last);
+//            List<BookingDtoItem> bookings = bookingService.getAllBookingsByItem(itemId);
+//
+//            BookingDtoItem last = bookings.getLast();
+//            BookingDtoItem next = bookings.stream().filter(b -> b.getStart().isAfter(LocalDateTime.now())).findFirst().orElse(null);
+//
+//            itemDto.setNextBooking(next);
+//            itemDto.setLastBooking(last);
         }
 
         log.info("получен item с ID = {}", item.getId());
