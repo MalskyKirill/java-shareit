@@ -37,10 +37,6 @@ class ItemControllerTest {
 
     private static final String USER_ID = "X-Sharer-User-Id";
 
-    private User user = new User(1L, "Kirill", "kirill@shareit.ru");
-
-    private Item item = new Item(1L, "Item1", "Description1", true, user, null);
-
     private ItemDto itemDto = new ItemDto(1L, "Item1", "Description1", true, null);
     private ItemDtoWithBookingAndComments itemDtoWithBookingAndComments = new ItemDtoWithBookingAndComments(1L, "Item1", "Description1", true,
         null, null, null, null);
