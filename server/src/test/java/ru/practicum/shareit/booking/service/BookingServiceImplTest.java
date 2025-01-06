@@ -17,7 +17,6 @@ import ru.practicum.shareit.enums.BookingState;
 import ru.practicum.shareit.enums.BookingStatus;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
@@ -38,7 +37,6 @@ import static org.mockito.Mockito.*;
 class BookingServiceImplTest {
 
     private final BookingRepository bookingRepository = mock(BookingRepository.class);
-    ;
     private final ItemRepository itemRepository = mock(ItemRepository.class);
     private final UserRepository userRepository = mock(UserRepository.class);
     private final BookingService bookingService = new BookingServiceImpl(bookingRepository,
