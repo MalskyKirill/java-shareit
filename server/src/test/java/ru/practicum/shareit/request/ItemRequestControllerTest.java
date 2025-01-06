@@ -11,8 +11,8 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResp;
 import ru.practicum.shareit.request.service.RequestService;
 import ru.practicum.shareit.user.dto.UserDto;
-import static org.hamcrest.Matchers.is;
 
+import static org.hamcrest.Matchers.is;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;

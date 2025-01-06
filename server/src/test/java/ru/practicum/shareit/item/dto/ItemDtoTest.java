@@ -16,7 +16,7 @@ class ItemDtoTest {
 
     @Test
     void testSerialize() throws Exception {
-        ItemDto itemDto = new ItemDto(1L, "TestItemName", "TestItemDescription" ,true, 1L);
+        ItemDto itemDto = new ItemDto(1L, "TestItemName", "TestItemDescription", true, 1L);
 
         JsonContent<ItemDto> result = json.write(itemDto);
 
@@ -35,5 +35,4 @@ class ItemDtoTest {
         assertThat(result).extractingJsonPathBooleanValue("$.available")
             .satisfies(item_available -> assertThat(item_available).isEqualTo(itemDto.getAvailable()));
     }
-
 }
