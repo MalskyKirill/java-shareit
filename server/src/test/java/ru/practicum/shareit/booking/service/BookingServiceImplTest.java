@@ -43,7 +43,6 @@ class BookingServiceImplTest {
     private final UserRepository userRepository = mock(UserRepository.class);
     private final BookingService bookingService = new BookingServiceImpl(bookingRepository,
         userRepository, itemRepository);
-    private final ItemService itemService;
     private static User booker;
     private static User owner;
     private static Item item;
