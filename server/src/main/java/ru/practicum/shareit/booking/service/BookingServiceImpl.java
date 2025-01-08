@@ -37,11 +37,6 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingDto createBooking(BookingDtoRequest bookingDtoRequest, Long userId) {
-        if (bookingDtoRequest.getStart().equals(bookingDtoRequest.getEnd()) || bookingDtoRequest.getEnd().isBefore(bookingDtoRequest.getStart())) {
-            log.error("The end time of the booking cannot be equal or before to the start time of the booking");
-            throw new ValidationException("The end time of the booking cannot be equal or before to the start time of the booking");
-        }
-
         User user = getUser(userId);
 
         Item item = itemRepository.findById(bookingDtoRequest.getItemId()).orElseThrow(() -> {

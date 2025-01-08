@@ -64,13 +64,13 @@ public class ItemServiceImpl implements ItemService {
         ItemDtoWithBookingAndComments itemDto = ItemMapper.mapToItemDtoWithBookingAndComments(item, null, null, comments);
 
         if (item.getOwner().getId().equals(userId)) { // если запрашивает владелец вещи
-//            List<BookingDtoItem> bookings = bookingService.getAllBookingsByItem(itemId);
-//
-//            BookingDtoItem last = bookings.getLast();
-//            BookingDtoItem next = bookings.stream().filter(b -> b.getStart().isAfter(LocalDateTime.now())).findFirst().orElse(null);
-//
-//            itemDto.setNextBooking(next);
-//            itemDto.setLastBooking(last);
+            List<BookingDtoItem> bookings = bookingService.getAllBookingsByItem(itemId);
+
+            BookingDtoItem last = bookings.getLast();
+            BookingDtoItem next = bookings.stream().filter(b -> b.getStart().isAfter(LocalDateTime.now())).findFirst().orElse(null);
+
+            itemDto.setNextBooking(next);
+            itemDto.setLastBooking(last);
         }
 
         log.info("получен item с ID = {}", item.getId());

@@ -36,6 +36,12 @@ public class BookingController {
     public ResponseEntity<Object> bookItem(@RequestHeader("X-Sharer-User-Id") long userId,
                                            @RequestBody @Valid BookItemRequestDto requestDto) {
         log.info("Creating booking {}, userId={}", requestDto, userId);
+
+        if (requestDto.getStart().equals(requestDto.getEnd()) || requestDto.getEnd().isBefore(requestDto.getStart())) {
+            log.error("The end time of the booking cannot be equal or before to the start time of the booking");
+            throw new IllegalArgumentException("The end time of the booking cannot be equal or before to the start time of the booking");
+        }
+
         return bookingClient.bookItem(userId, requestDto);
     }
 
