@@ -3,6 +3,7 @@ package ru.practicum.shareit;
 import ru.practicum.shareit.booking.dto.BookingDtoRequest;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResp;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
@@ -22,4 +23,5 @@ public class TestUtils {
     public static LocalDateTime now = LocalDateTime.of(2024, 12, 12, 10, 0, 0);
     public static BookingDtoRequest bookingDtoRequest = new BookingDtoRequest(1L, now, now.plusDays(8));
     public static BookingDtoRequest bookingDtoRequest2 = new BookingDtoRequest(3L, now, now.plusDays(8));
+    public static ItemRequestDto requestDto = new ItemRequestDto("request");
 }

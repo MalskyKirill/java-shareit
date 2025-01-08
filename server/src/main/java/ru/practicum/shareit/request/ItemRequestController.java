@@ -32,10 +32,11 @@ public class ItemRequestController {
         return requestService.getAllRequestsByOwner(userId);
     }
 
-//    @GetMapping("/all") // нет тестов в постмане
-//    public List<ItemRequestDtoResp> getAllRequests() {
-//        return null;
-//    }
+    @GetMapping("/all")
+    public List<ItemRequestDtoResp> getAllRequestsCreatedOtherUsers(@RequestHeader("X-Sharer-User-Id") Long userId) {
+        log.info("GET-запрос к эндпоинту: '/requests/all' на получение requests");
+        return requestService.getAllRequestsCreatedOtherUsers(userId);
+    }
 
     @GetMapping("/{requestId}")
     public ItemRequestDtoResp getRequestById(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long requestId) {

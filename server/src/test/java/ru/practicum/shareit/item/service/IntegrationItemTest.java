@@ -28,6 +28,7 @@ public class IntegrationItemTest {
     @Test
     public void getItemByIdTest() {
         UserDto savedUser = userService.createUser(owner);
+
         ItemDto savedItem = itemService.createItem(item2, savedUser.getId());
         UserDto savedRequester = userService.createUser(requester);
         bookingService.createBooking(bookingDtoRequest2, savedRequester.getId());

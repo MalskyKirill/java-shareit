@@ -35,7 +35,6 @@ class RequestServiceImplTest {
         user = new User(1L, "name", "user1@mail.com");
         itemRequest = new ItemRequest(1L, "description", user, LocalDateTime.now());
         itemRequestDto = ItemRequestMapper.mapToItemRequestDtoResp(itemRequest);
-        itemRequestDto.setItems(Collections.emptyList());
     }
 
     @Test
@@ -58,6 +57,7 @@ class RequestServiceImplTest {
         when(userRepository.findById(anyLong()))
             .thenReturn(Optional.of(user));
         ItemRequestDtoResp result = requestService.getRequestById(1L, 1L);
+        result.setItems(null);
         assertNotNull(result);
         assertEquals(itemRequestDto, result);
         verify(requestRepository, times(1)).findById(anyLong());

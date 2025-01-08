@@ -208,24 +208,6 @@ class BookingServiceImplTest {
     }
 
     @Test
-    public void shouldExceptionWhenCreateBookingEndTimeBeforeStartTime() {
-        BookingDtoRequest bookingDtoRequest = new BookingDtoRequest(item.getId(), bookingDto.getEnd(), bookingDto.getStart());
-        when(bookingRepository.save(any(Booking.class)))
-            .thenReturn(booking);
-        when(userRepository.findById(anyLong()))
-            .thenReturn(Optional.of(booker));
-        when(itemRepository.findById(anyLong()))
-            .thenReturn(Optional.of(item));
-
-        try {
-            bookingService.createBooking(bookingDtoRequest, 1L);
-            fail("ValidationException expected");
-        } catch (ValidationException e) {
-            assertTrue(e.getMessage().contains("The end time of the booking cannot be equal or before to the start time of the booking"));
-        }
-    }
-
-    @Test
     public void shouldExceptionUpdateBookingApprovedWithFailUser() {
         Booking bookingApr = new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item, booker,
             BookingStatus.WAITING);

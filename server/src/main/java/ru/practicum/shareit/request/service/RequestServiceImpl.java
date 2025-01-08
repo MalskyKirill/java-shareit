@@ -17,10 +17,10 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -54,10 +54,34 @@ public class RequestServiceImpl implements RequestService {
 
         List<Item> itemsList = itemRepository.findAllByItemRequestIn(requestsList);
 
+        Map<ItemRequest, List<Item>> itemsMap = itemsList.stream().collect(
+            Collectors.groupingBy(Item::getItemRequest));
+
         List<ItemRequestDtoResp> response = new ArrayList<>();
 
         for (ItemRequest request : requestsList) {
-            response.add(ItemRequestMapper.mapToItemRequestDtoResp(request, itemsList.stream().filter(item -> Objects.equals(item.getItemRequest().getId(), request.getId())).collect(Collectors.toList())));
+            response.add(ItemRequestMapper.mapToItemRequestDtoResp(request, itemsMap.get(request)));
+        }
+
+        return response;
+    }
+
+    @Override
+    public List<ItemRequestDtoResp> getAllRequestsCreatedOtherUsers(Long userId) {
+        getUser(userId);
+
+        List<ItemRequest> requestsList = repository.findAllByRequestorIdNot(userId, sortByDesc);
+        log.info("requestsList with out " + userId + " have been received from bd");
+
+        List<Item> itemsList = itemRepository.findAllByItemRequestIn(requestsList);
+
+        Map<ItemRequest, List<Item>> itemsMap = itemsList.stream().collect(
+            Collectors.groupingBy(Item::getItemRequest));
+
+        List<ItemRequestDtoResp> response = new ArrayList<>();
+
+        for (ItemRequest request : requestsList) {
+            response.add(ItemRequestMapper.mapToItemRequestDtoResp(request, itemsMap.get(request)));
         }
 
         return response;
@@ -77,7 +101,6 @@ public class RequestServiceImpl implements RequestService {
         List<Item> items = itemRepository.findAllByItemRequest(itemRequest);
         return ItemRequestMapper.mapToItemRequestDtoResp(itemRequest, items);
     }
-
 
     private User getUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> {
