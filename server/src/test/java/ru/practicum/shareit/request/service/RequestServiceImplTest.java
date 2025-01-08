@@ -51,6 +51,19 @@ class RequestServiceImplTest {
     }
 
     @Test
+    void getAllRequestsCreatedOtherUsers() {
+        when(requestRepository.findAllByRequestorIdNot(anyLong(), any(Sort.class)))
+            .thenReturn(List.of(itemRequest));
+        when(userRepository.findById(anyLong()))
+            .thenReturn(Optional.of(user));
+        List<ItemRequestDtoResp> result = requestService.getAllRequestsCreatedOtherUsers(1L);
+        assertNotNull(result);
+        assertEquals(List.of(itemRequestDto), result);
+        verify(requestRepository, times(1)).findAllByRequestorIdNot(anyLong(), any(Sort.class));
+        verify(itemRepository, times(1)).findAllByItemRequestIn(anyList());
+    }
+
+    @Test
     void getRequestById() {
         when(requestRepository.findById(anyLong()))
             .thenReturn(Optional.of(itemRequest));

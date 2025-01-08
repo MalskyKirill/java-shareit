@@ -89,6 +89,26 @@ class ItemRequestControllerTest {
     }
 
     @Test
+    void getAllRequestsCreatedOtherUsers() throws Exception {
+        when(requestService.getAllRequestsCreatedOtherUsers(any(Long.class)))
+            .thenReturn(List.of(itemRequestDtoResp));
+        mvc.perform(get("/requests/all")
+                .content(mapper.writeValueAsString(listItemRequestDto))
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(USER_ID, 1))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.[0].id", is(itemRequestDtoResp.getId()), Long.class))
+            .andExpect(jsonPath("$.[0].description", is(itemRequestDtoResp.getDescription())))
+            .andExpect(jsonPath("$.[0].requestor.id", is(itemRequestDtoResp.getRequestor().getId()), Long.class))
+            .andExpect(jsonPath("$.[0].requestor.name", is(itemRequestDtoResp.getRequestor().getName())))
+            .andExpect(jsonPath("$.[0].requestor.email", is(itemRequestDtoResp.getRequestor().getEmail())))
+            .andExpect(jsonPath("$.[0].created",
+                is(itemRequestDtoResp.getCreated().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))));
+    }
+
+    @Test
     void getRequestById() throws Exception {
         when(requestService.getRequestById(any(Long.class), any(Long.class)))
             .thenReturn(itemRequestDtoResp);
