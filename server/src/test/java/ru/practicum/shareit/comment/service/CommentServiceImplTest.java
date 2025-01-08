@@ -12,6 +12,8 @@ import ru.practicum.shareit.comment.mapper.CommentMapper;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.comment.repository.CommentRepository;
 import ru.practicum.shareit.enums.BookingStatus;
+import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -76,5 +78,57 @@ class CommentServiceImplTest {
         commentDtoR.setCreated(result.getCreated());
         assertEquals(commentDtoR, result);
         verify(commentRepository, times(1)).save(any(Comment.class));
+    }
+
+    @Test
+    void shouldExceptionWhenCreateCommentWithFaiUser() {
+        Comment comment = new Comment(1L, "text", item, user, null);
+        CommentDto commentDto = new CommentDto("text");
+        Booking booking = new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item, user, BookingStatus.APPROVED);
+        when(commentRepository.save(any(Comment.class)))
+            .thenReturn(comment);
+        when(itemRepository.findById(anyLong()))
+            .thenReturn(Optional.of(item));
+        when(bookingRepository.findByItemIdAndBookerIdAndStatusAndStartBefore(anyLong(), anyLong(),
+            any(BookingStatus.class), any(LocalDateTime.class)))
+            .thenReturn(booking);
+        NotFoundException exp = assertThrows(NotFoundException.class,
+            () -> commentService.createComment(commentDto, user.getId(), item.getId()));
+        assertEquals("User with id 1 not found",
+            exp.getMessage());
+    }
+
+    @Test
+    void shouldExceptionWhenCreateCommentWithFaiItem() {
+        Comment comment = new Comment(1L, "text", item, user, null);
+        CommentDto commentDto = new CommentDto("text");
+        Booking booking = new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item, user, BookingStatus.APPROVED);
+        when(commentRepository.save(any(Comment.class)))
+            .thenReturn(comment);
+        when(userRepository.findById(anyLong()))
+            .thenReturn(Optional.of(user));
+        when(bookingRepository.findByItemIdAndBookerIdAndStatusAndStartBefore(anyLong(), anyLong(),
+            any(BookingStatus.class), any(LocalDateTime.class)))
+            .thenReturn(booking);
+        NotFoundException exp = assertThrows(NotFoundException.class,
+            () -> commentService.createComment(commentDto, user.getId(), item.getId()));
+        assertEquals("Item with id 1 not found",
+            exp.getMessage());
+    }
+
+    @Test
+    void shouldExceptionWhenCreateCommentWithFaiBooking() {
+        Comment comment = new Comment(1L, "text", item, user, null);
+        CommentDto commentDto = new CommentDto("text");
+        when(commentRepository.save(any(Comment.class)))
+            .thenReturn(comment);
+        when(userRepository.findById(anyLong()))
+            .thenReturn(Optional.of(user));
+        when(itemRepository.findById(anyLong()))
+            .thenReturn(Optional.of(item));
+        ValidationException exp = assertThrows(ValidationException.class,
+            () -> commentService.createComment(commentDto, user.getId(), item.getId()));
+        assertEquals("The user did not book this item",
+            exp.getMessage());
     }
 }

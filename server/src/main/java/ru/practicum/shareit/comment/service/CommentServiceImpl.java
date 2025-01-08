@@ -43,6 +43,7 @@ public class CommentServiceImpl implements CommentService {
             log.error("User with id " + userId + " not found");
             throw new NotFoundException("User with id " + userId + " not found");
         });
+
         Item item = itemRepository.findById(itemId).orElseThrow(() -> {
             log.error("Item with id " + itemId + " not found");
             throw new NotFoundException("Item with id " + itemId + " not found");

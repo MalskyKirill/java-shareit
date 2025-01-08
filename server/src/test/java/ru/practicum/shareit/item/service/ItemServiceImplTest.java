@@ -2,12 +2,17 @@ package ru.practicum.shareit.item.service;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
+import ru.practicum.shareit.comment.dto.CommentDto;
+import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.comment.repository.CommentRepository;
 import ru.practicum.shareit.comment.service.CommentService;
 import ru.practicum.shareit.comment.service.CommentServiceImpl;
+import ru.practicum.shareit.enums.BookingStatus;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBookingAndComments;
 import ru.practicum.shareit.item.mapper.ItemMapper;
@@ -19,11 +24,11 @@ import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 import ru.practicum.shareit.user.storage.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -104,5 +109,13 @@ class ItemServiceImplTest {
         assertEquals(1, result.size());
         assertEquals(List.of(itemDtoWithBookingAndComments), result);
         verify(itemRepository, times(1)).findItemsByOwnerId(anyLong());
+    }
+
+    @Test
+    void shouldExceptionWhenGetItemWithFaiItem() {
+        NotFoundException exp = assertThrows(NotFoundException.class,
+            () -> itemService.getItem(1L, 1L));
+        assertEquals("Item with id 1 not found",
+            exp.getMessage());
     }
 }
