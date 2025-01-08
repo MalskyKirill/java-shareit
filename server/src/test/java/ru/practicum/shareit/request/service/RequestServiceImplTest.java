@@ -12,7 +12,6 @@ import ru.practicum.shareit.user.storage.UserRepository;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
