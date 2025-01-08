@@ -2,6 +2,7 @@ package ru.practicum.shareit.request.service;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDtoResp;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
@@ -74,6 +75,28 @@ class RequestServiceImplTest {
         assertEquals(itemRequestDto, result);
         verify(requestRepository, times(1)).findById(anyLong());
         verify(itemRepository, times(1)).findAllByItemRequest(any(ItemRequest.class));
+    }
+
+    @Test
+    void shouldExceptionWhenGtRequestByIdWithFaiUser() {
+        when(requestRepository.findById(anyLong()))
+            .thenReturn(Optional.of(itemRequest));
+
+        NotFoundException exp = assertThrows(NotFoundException.class,
+            () -> requestService.getRequestById(1L, 1L));
+        assertEquals("User with id 1 not found",
+            exp.getMessage());
+    }
+
+    @Test
+    void shouldExceptionWhenGtRequestByIdWithFaiItemRequest() {
+        when(userRepository.findById(anyLong()))
+            .thenReturn(Optional.of(user));
+
+        NotFoundException exp = assertThrows(NotFoundException.class,
+            () -> requestService.getRequestById(1L, 1L));
+        assertEquals("request with id 1 not found",
+            exp.getMessage());
     }
 
 }
